@@ -84,8 +84,8 @@ public:
 
 	double modalUnitOutput()
 	{
-		testModalUnit.setPerSample(frequency);
-		return testModalUnit.getOutput();
+		//testModalUnit.setPerSample(frequency);
+		return testModalUnit.getOutput(frequency);
 	}
 
 	//=======================================================
@@ -109,7 +109,7 @@ public:
 
 	double delayOutput()
 	{
-        return delayLine.delay(aDSROutput()*oscOutput(), 0.5, 0.4, 0.0, 0.2);
+        return delayLine.delay(aDSROutput()*oscOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
 	}
 
 	double mixedSignal()
@@ -223,6 +223,18 @@ public:
 			synthGain = *inGain;
 		}
 
+		float* delayTimePtr = parametersPointer->getRawParameterValue(id_DelTime); 
+		delayTimeVar = *delayTimePtr; 
+
+		float* delayFeedbackPtr = parametersPointer->getRawParameterValue(id_DelFeedback);
+		delayFeedbackVar = *delayFeedbackPtr;  
+
+		float* delayDWMixPtr = parametersPointer->getRawParameterValue(id_DelDWMix);
+		delayDWMixVar = *delayDWMixPtr; 
+		
+		float* delayPrePostMixPtr = parametersPointer->getRawParameterValue(id_DelPrePostMix);
+		delayPrePostMixVar = *delayPrePostMixPtr; 
+		
 	}
 
 	void updateParametersOnStartNote()
@@ -239,6 +251,9 @@ public:
 		float* envReleaseTimePtr = parametersPointer->getRawParameterValue(id_EnvRelease);
 		envReleaseTime = *envReleaseTimePtr;
 
+		float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
+		numPartialsVar = *numPartialsPtr;
+
 	}
 
     //=======================================================
@@ -251,7 +266,7 @@ private:
 	MaxiOsc noiseOsc;
     
     OwnedArray<MaxiOsc> mOscillators;
-    const int numOscillators = 50; // HOW TO ADAPT OR PROTECT AGAINST NOTES BEING MADE ABOVE 1/2 SAMPLE RATE HZ?? eg. set to 100 and glitches
+    const int numOscillators = 10; // HOW TO ADAPT OR PROTECT AGAINST NOTES BEING MADE ABOVE 1/2 SAMPLE RATE HZ?? eg. set to 100 and glitches
         
     int adsrCounter = 0;
     double adsrValue = 0;
@@ -272,6 +287,13 @@ private:
 	float envDecayTime = 0.2f;
 	float envSustainLevel = 0.0f;
 	float envReleaseTime = 0.02f;
+
+	float numPartialsVar = 20.0f;
+
+	float delayTimeVar;
+	float delayFeedbackVar;
+	float delayDWMixVar;
+	float delayPrePostMixVar;
 
     MaxiDelayline delayLine;
 	SVFilter simpleFilter;

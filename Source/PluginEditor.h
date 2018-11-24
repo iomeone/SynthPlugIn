@@ -36,8 +36,9 @@ private:
 	AudioPlugInAudioProcessor& processor;
 	
 	void createGainGroup();
-
 	void createEnvelopeGroup();
+	void createNumPartialsGroup();
+	void createDelayGroup();
 
 	FlexBox mFlexBox;
 

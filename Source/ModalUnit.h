@@ -20,25 +20,26 @@
 class ModalUnit    : public MaxiOsc, public EnvelopeGenerator
 {
 public:
-    ModalUnit()
-    {		
-    }
+	ModalUnit()
+	{
+		
+	}
 
 	void setPerSample(double frequency)
 	{
 		frequencyOsc = frequency;
 	}
 
-	double getOutput()
+	double getOutput(double frequency)
 	{
-		output = testOsc.sinewave(frequencyOsc);
+		output = testOsc.sinewave(frequency);
 		return output;
 	}
 	
-
+	
 private:
 	MaxiOsc testOsc;
-	EnvelopeGenerator testADSR;
+	//EnvelopeGenerator testADSR;
 	double frequencyOsc = 440;
 	double output = 0.0;
 

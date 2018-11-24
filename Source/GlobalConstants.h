@@ -12,7 +12,7 @@
 
 
 
-const int componentWidth = 60; //sets width of components
+const int componentWidth = 50; //sets width of components
 const int componentHeight = 60; //sets height of components
 const int textBoxWidth = 40; //sets width of numeric text box for sliders
 const int textBoxHeight = 14; //sets height of numeric text box for sliders

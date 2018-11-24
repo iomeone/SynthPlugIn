@@ -21,7 +21,7 @@ LabeledSlider::LabeledSlider(AudioProcessorValueTreeState& state,
 	Slider* slider = new Slider();
     slider->setName(name);
 	slider->setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, false, 0, 0);
-	slider->setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
+	slider->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag); // OR RotaryHorizontalVerticalDrag
     slider->setValue(defaultValue, dontSendNotification);
     slider->setDoubleClickReturnValue(true, defaultValue);
     slider->setRange(mRange.getRange().getStart(), mRange.getRange().getEnd(), 0.001);

@@ -196,7 +196,7 @@ public:
 	{
 	}
     
-    /** label */
+    //LABEL (IE. NUMERIC VALUE & NUMERIC INPUT)
     void drawLabel (Graphics& g, Label& label) override
     {
         
@@ -224,7 +224,7 @@ public:
     //virtual BorderSize<int> getLabelBorderSize (Label&) = 0;
     
     
-    /** slider */
+    //SLIDER
     void drawRotarySlider(Graphics& g, int x, int y, int width, int height, float sliderPos,
                           const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider) override
     {
@@ -307,12 +307,13 @@ public:
         }
     }
 
-    /** group component */
+
+    //LABELED COMPONENT STYLE
 	void drawGroupComponentOutline(Graphics& g, int width, int height,
 		const String& text, const Justification& position,
 		GroupComponent& group) override
 	{
-		const float textH = 11; //controls header text
+		const float textH = 10; //controls individual slider header text
 		const float indent = 3.0f;
 		const float textEdgeGap = 4.0f;
 		auto cs = 5.0f;

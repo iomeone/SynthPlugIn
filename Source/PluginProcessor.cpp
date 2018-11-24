@@ -222,12 +222,20 @@ void AudioPlugInAudioProcessor::initializeParameters()
 { // parameter ID, parameter name, parameter label (suffix), range, default value, null, null
 
 
-	parameters.createAndAddParameter(id_SynthGain, "Synth Gain", String(), NormalisableRange<float>(0.0f, 2.0f), 1.0f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_SynthGain, "Gain", String(), NormalisableRange<float>(0.0f, 2.0f), 1.0f, nullptr, nullptr);
 	
-	parameters.createAndAddParameter(id_EnvAttack, "Envelope Attack", String(), NormalisableRange<float>(0.001f, 2.0f), 0.01f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_EnvDecay, "Envelope Decay", String(), NormalisableRange<float>(0.001f, 10.0f), 3.0f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_EnvSustain, "Envelope Sustain", String(), NormalisableRange<float>(0.0f, 1.0f), 0.0f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_EnvRelease, "Envelope Release", String(), NormalisableRange<float>(0.001f, 4.0f), 0.02f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_EnvAttack, "Attack", String(), NormalisableRange<float>(0.001f, 2.0f), 0.01f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_EnvDecay, "Decay", String(), NormalisableRange<float>(0.001f, 10.0f), 3.0f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_EnvSustain, "Sustain", String(), NormalisableRange<float>(0.0f, 1.0f), 0.0f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_EnvRelease, "Release", String(), NormalisableRange<float>(0.001f, 4.0f), 0.02f, nullptr, nullptr);
+
+	parameters.createAndAddParameter(id_NumPartials, "# Partials", String(), NormalisableRange<float>(1.0f, 200.0f), 50, nullptr, nullptr); 
+	// ANY WAY TO SET THIS UP AS INT?
+
+	parameters.createAndAddParameter(id_DelTime, "Time", String(), NormalisableRange<float>(0.0f, 2.0f), 0.5f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_DelFeedback, "Feedback", String(), NormalisableRange<float>(0.0f, 1.0f), 0.4f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_DelPrePostMix, "Pre/Post", String(), NormalisableRange<float>(0.0f, 1.0f), 0.0f, nullptr, nullptr);
+	parameters.createAndAddParameter(id_DelDWMix, "Dry/Wet", String(), NormalisableRange<float>(0.0f, 1.0f), 0.2f, nullptr, nullptr);
 
 //    AudioParameterFloat (const String& parameterID,
 //                         const String& name,

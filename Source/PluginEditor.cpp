@@ -21,8 +21,10 @@ AudioPlugInAudioProcessorEditor::AudioPlugInAudioProcessorEditor (AudioPlugInAud
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
+	createNumPartialsGroup();
 	createGainGroup();
 	createEnvelopeGroup();
+	createDelayGroup();
 
 	setResizable(true, true);
 	setSize(screenWidth, screenHeight);
