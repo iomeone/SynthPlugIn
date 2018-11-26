@@ -2,7 +2,7 @@
 //  LabeledSlider.h
 //  flexbox - App
 //
-//  Created by Output Dev Laptop 2 on 10/21/18.
+//  Created by Bruce Dawson on 10/21/18.
 //
 
 #include "GlobalConstants.h"
@@ -53,6 +53,9 @@ public:
     void editorShown (Label* label, TextEditor& textEditor) override;
 
 private:
+    
+    // internal
+    void updateLabelText();
     
     int mNumberOfDecimalsToDisplay;
     

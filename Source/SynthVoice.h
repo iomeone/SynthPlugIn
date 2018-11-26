@@ -27,12 +27,9 @@ public:
 	SynthVoice(AudioProcessorValueTreeState* parameters)
 		: parametersPointer(parameters)
 	{
+        updateAllParameters();
         
-        outputScalar = 1.0/numOscillators;
-        
-        for(int i = 0; i < numOscillators; i ++){
-            mOscillators.add(new MaxiOsc());
-        }
+        constructModalUnits();
 	}
 
     bool canPlaySound (SynthesiserSound* sound) override
@@ -44,49 +41,45 @@ public:
 
 	void setCurrentPlaybackSampleRate(double newRate) override
 	{
-		SynthesiserVoice::setCurrentPlaybackSampleRate(newRate);
-
-		aDSR.setSampleRate(newRate);
-		envImpulse.setSampleRate(newRate);
-        delayLine.setSampleRate(newRate, 2.0);
-		testOsc.setSampleRate(newRate);
-		noiseOsc.setSampleRate(newRate);
-        simpleFilter.setSampleRate(newRate);
+        mSampleRate = newRate;
         
-        for(int i = 0; i < mOscillators.size(); i ++){
-            
-            MaxiOsc* osc = mOscillators.getUnchecked(i);
-            osc->setSampleRate(newRate);
-            
-        }
+		SynthesiserVoice::setCurrentPlaybackSampleRate(mSampleRate);
+
+		aDSR.setSampleRate(mSampleRate);
+		envImpulse.setSampleRate(mSampleRate);
+        delayLine.setSampleRate(mSampleRate, 2.0);
+		testOsc.setSampleRate(mSampleRate);
+		noiseOsc.setSampleRate(mSampleRate);
+        simpleFilter.setSampleRate(mSampleRate);
+        
+        constructModalUnits();
+        
 	}
     //=======================================================
     
     double oscOutput()
     {
-		// return testOsc.sinewave(frequency);
-        
         double output = 0.0;
         
-        for(int i = 0; i < mOscillators.size(); i ++){
+//        for(int i = 0; i < mOscillators.size(); i ++){
+//
+//            MaxiOsc* osc = mOscillators.getUnchecked(i);
+//            output = output + (osc->sinewave((i+1)*frequency) /(i+1));
+//
+//        }
+        
+        for(int i = 0; i < mModalUnits.size(); i ++){
             
-            MaxiOsc* osc = mOscillators.getUnchecked(i);
-            output = output + (osc->sinewave((i+1)*frequency) /(i+1));
-            
+            ModalUnit* unit = mModalUnits.getUnchecked(i);
+            output = output + unit->getOutput(frequency);
         }
+        
+        
         
         output = output * outputScalar;   	//ie. output = output / mOscillators.size();
         
         return output;
     }
-	
-	//=======================================================
-
-	double modalUnitOutput()
-	{
-		//testModalUnit.setPerSample(frequency);
-		return testModalUnit.getOutput(frequency);
-	}
 
 	//=======================================================
 
@@ -208,6 +201,7 @@ public:
 			for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
 			{
                 outputBuffer.addSample(channel, startSample, delayOutput()*oscillatorGainSmoothed); ///////MAIN OUTPUT HERE
+//                outputBuffer.addSample(channel, startSample, modalUnitOutput()*oscillatorGainSmoothed);
 			}
 			++startSample;
 		}
@@ -233,7 +227,15 @@ public:
 		delayDWMixVar = *delayDWMixPtr; 
 		
 		float* delayPrePostMixPtr = parametersPointer->getRawParameterValue(id_DelPrePostMix);
-		delayPrePostMixVar = *delayPrePostMixPtr; 
+		delayPrePostMixVar = *delayPrePostMixPtr;
+        
+        float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
+        
+        if(numPartialsVar != *numPartialsPtr){
+            
+            numPartialsVar = *numPartialsPtr;
+            constructModalUnits();
+        }
 		
 	}
 
@@ -251,22 +253,45 @@ public:
 		float* envReleaseTimePtr = parametersPointer->getRawParameterValue(id_EnvRelease);
 		envReleaseTime = *envReleaseTimePtr;
 
-		float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
-		numPartialsVar = *numPartialsPtr;
-
+//        float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
+//
+//        if(numPartialsVar != *numPartialsPtr){
+//
+//            numPartialsVar = *numPartialsPtr;
+//            constructModalUnits();
+//        }
 	}
+    
+    void updateAllParameters()
+    {
+        updateParametersEachBlock();
+        updateParametersOnStartNote();
+    }
+    
+    void constructModalUnits()
+    {
+        mModalUnits.clear();
+        
+        outputScalar = 1.0/numPartialsVar;
+        
+        for(int i = 0 ; i < numPartialsVar; i++){
+            
+            ModalUnit* unit = new ModalUnit(i+1);
+            unit->setSampleRate(mSampleRate);
+            
+            mModalUnits.add(unit);
+        }
+    }
 
     //=======================================================
 private:
 	AudioProcessorValueTreeState * parametersPointer;
-
-	ModalUnit testModalUnit;
-
 	MaxiOsc testOsc;
 	MaxiOsc noiseOsc;
     
-    OwnedArray<MaxiOsc> mOscillators;
-    const int numOscillators = 10; // HOW TO ADAPT OR PROTECT AGAINST NOTES BEING MADE ABOVE 1/2 SAMPLE RATE HZ?? eg. set to 100 and glitches
+    OwnedArray<ModalUnit> mModalUnits;
+    
+    double mSampleRate = 44100.0f;
         
     int adsrCounter = 0;
     double adsrValue = 0;
@@ -288,7 +313,7 @@ private:
 	float envSustainLevel = 0.0f;
 	float envReleaseTime = 0.02f;
 
-	float numPartialsVar = 20.0f;
+	int numPartialsVar = 20;
 
 	float delayTimeVar;
 	float delayFeedbackVar;

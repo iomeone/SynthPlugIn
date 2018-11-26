@@ -4,6 +4,10 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="xcqMQq" name="AudioPlugIn">
     <GROUP id="{1FB0656C-FF68-2BE1-8A5F-BD3F35BA2C55}" name="Source">
+      <FILE id="TCHUUm" name="LabeledComponent.cpp" compile="1" resource="0"
+            file="Source/LabeledComponent.cpp"/>
+      <FILE id="qL9qFj" name="LabeledComponent.h" compile="0" resource="0"
+            file="Source/LabeledComponent.h"/>
       <FILE id="hyqiUU" name="ModalUnit.h" compile="0" resource="0" file="Source/ModalUnit.h"/>
       <FILE id="Pg4BXN" name="MaxiDelay.cpp" compile="1" resource="0" file="Source/MaxiDelay.cpp"/>
       <FILE id="fDDRRc" name="MaxiDelay.h" compile="0" resource="0" file="Source/MaxiDelay.h"/>

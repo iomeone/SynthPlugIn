@@ -62,7 +62,6 @@ public:
 
 private:
     //==============================================================================
-	void initializeParameters();
 
 	Array<SynthVoice*> mVoices;
 	Synthesiser mySynth;

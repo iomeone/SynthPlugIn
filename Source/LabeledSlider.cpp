@@ -2,7 +2,7 @@
 //  LabeledSlider.cpp
 //  flexbox - App
 //
-//  Created by Output Dev Laptop 2 on 10/21/18.
+//  Created by Bruce Dawson on 10/21/18.
 //
 
 #include "LabeledSlider.h"
@@ -33,6 +33,7 @@ LabeledSlider::LabeledSlider(AudioProcessorValueTreeState& state,
     mLabel->setEditable(true);
     mLabel->addListener(this);
     addAndMakeVisible(mLabel.get());
+    updateLabelText();
     
     AudioProcessorValueTreeState::SliderAttachment* attachment =
     new AudioProcessorValueTreeState::SliderAttachment(state, parameterId, *slider);
@@ -115,10 +116,7 @@ void LabeledSlider::setInterval(float inNewInterval)
 
 void LabeledSlider::sliderValueChanged (Slider* slider)
 {
-    String value = String(mSlider->getValue(),
-                          mNumberOfDecimalsToDisplay);
-
-    mLabel->setText(value, dontSendNotification);
+    updateLabelText();
 }
 
 void LabeledSlider::sliderDragStarted (Slider* slider)
@@ -144,6 +142,14 @@ void LabeledSlider::editorShown (Label* label, TextEditor& textEditor)
     new juce::TextEditor::LengthAndCharacterRestriction (10, "0123456789.");
     
     textEditor.setInputFilter(filter, true);
+}
+
+void LabeledSlider::updateLabelText()
+{
+    String value = String(mSlider->getValue(),
+                          mNumberOfDecimalsToDisplay);
+    
+    mLabel->setText(value, dontSendNotification);
 }
 
 void LabeledSlider::onValueChange()

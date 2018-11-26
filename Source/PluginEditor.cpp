@@ -11,7 +11,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "GlobalConstants.h"
-#include "LabeledSlider.h"
 #include "GUIElements.h"
 
 //==============================================================================

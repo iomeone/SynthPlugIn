@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include "LabeledComponent.h"
+
 #pragma once
 
 
@@ -19,7 +21,9 @@ void AudioPlugInAudioProcessorEditor::createNumPartialsGroup()
 	Array<Component*> numPartialsGroupSliders;
 
 	//# PARTIALS
-	LabeledSlider* numPartialsSlider = new LabeledSlider(processor.parameters, id_NumPartials);
+	LabeledComponent* numPartialsSlider = new LabeledComponent(kLabeledComponentStyle_Slider,
+                                                               processor.parameters,
+                                                               id_NumPartials);
 	numPartialsSlider->setInterval(1.0f);
 	numPartialsSlider->setNumDecimalPlacesToDisplay(0);
 	//numPartialsSlider->setSkewFactorFromMidPoint(0.5);

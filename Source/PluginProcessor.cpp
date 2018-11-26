@@ -24,11 +24,25 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
 		.withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
 	),
-	parameters(*this, nullptr)
+    parameters(*this, nullptr, Identifier("AudioTree"), {
+        
+        /** declare our parameters */
+        std::make_unique<AudioParameterFloat> (id_SynthGain, "Gain", NormalisableRange<float>(0.0f, 2.0f), 1.0f),
+        
+        std::make_unique<AudioParameterFloat> (id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
+        std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 3.0f),
+        std::make_unique<AudioParameterFloat> (id_EnvSustain, "Sustain", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+        std::make_unique<AudioParameterFloat> (id_EnvRelease, "Release", NormalisableRange<float>(0.001f, 4.0f), 0.02f),
+        
+        std::make_unique<AudioParameterInt>   (id_NumPartials, "# Partials", 1, 200, 50),
+        
+        std::make_unique<AudioParameterFloat> (id_DelTime, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.5f),
+        std::make_unique<AudioParameterFloat> (id_DelFeedback, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
+        std::make_unique<AudioParameterFloat> (id_DelPrePostMix, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+        std::make_unique<AudioParameterFloat> (id_DelDWMix, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.2f),
+    })
 #endif
 {
-	initializeParameters();
-
 	mySynth.clearVoices();
 
 	for (int i = 0; i < numVoices; i++)
@@ -218,58 +232,6 @@ void AudioPlugInAudioProcessor::setStateInformation (const void* data, int sizeI
     // whose contents will have been created by the getStateInformation() call.
 }
 
-void AudioPlugInAudioProcessor::initializeParameters()
-{ // parameter ID, parameter name, parameter label (suffix), range, default value, null, null
-
-
-	parameters.createAndAddParameter(id_SynthGain, "Gain", String(), NormalisableRange<float>(0.0f, 2.0f), 1.0f, nullptr, nullptr);
-	
-	parameters.createAndAddParameter(id_EnvAttack, "Attack", String(), NormalisableRange<float>(0.001f, 2.0f), 0.01f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_EnvDecay, "Decay", String(), NormalisableRange<float>(0.001f, 10.0f), 3.0f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_EnvSustain, "Sustain", String(), NormalisableRange<float>(0.0f, 1.0f), 0.0f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_EnvRelease, "Release", String(), NormalisableRange<float>(0.001f, 4.0f), 0.02f, nullptr, nullptr);
-
-	parameters.createAndAddParameter(id_NumPartials, "# Partials", String(), NormalisableRange<float>(1.0f, 200.0f), 50, nullptr, nullptr); 
-	// ANY WAY TO SET THIS UP AS INT?
-
-	parameters.createAndAddParameter(id_DelTime, "Time", String(), NormalisableRange<float>(0.0f, 2.0f), 0.5f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_DelFeedback, "Feedback", String(), NormalisableRange<float>(0.0f, 1.0f), 0.4f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_DelPrePostMix, "Pre/Post", String(), NormalisableRange<float>(0.0f, 1.0f), 0.0f, nullptr, nullptr);
-	parameters.createAndAddParameter(id_DelDWMix, "Dry/Wet", String(), NormalisableRange<float>(0.0f, 1.0f), 0.2f, nullptr, nullptr);
-
-//    AudioParameterFloat (const String& parameterID,
-//                         const String& name,
-//                         NormalisableRange<float> normalisableRange,
-//                         float defaultValue,
-//                         const String& label = String(),
-//                         Category category = AudioProcessorParameter::genericParameter,
-//                         std::function<String (float value, int maximumStringLength)> stringFromValue = nullptr,
-//                         std::function<float (const String& text)> valueFromString = nullptr);
-    
-    
-//    AudioParameterFloat* oscillatorGain = new AudioParameterFloat ("test",
-//                                                              "Synth Gain",
-//                                                              NormalisableRange<float>(-24.0f, 24.0f),
-//                                                              0.5f,
-//                                                              String(),
-//                                                              AudioProcessorParameter::genericParameter,
-//                                                              nullptr,
-//                                                              nullptr);
-//
-//    std::unique_ptr<AudioParameterFloat> gain = std::unique_ptr<AudioParameterFloat>(oscillatorGain);
-    
-    
-//    parameters.createAndAddParameter(gain);
-    
-	/*
-	for(int i = 0; i < kParameterId_TotalNumParamters; i ++){
-	parameters.createAndAddParameter(ParameterIDs[i],
-	ParameterIDs[i],
-	ParameterIDs[i], NormalisableRange<float>(0.0, 1.0), 0.5f, nullptr, nullptr);
-	}*/
-
-	parameters.state = ValueTree(Identifier("Mike"));
-}
 //==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()

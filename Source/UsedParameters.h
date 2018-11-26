@@ -3,7 +3,7 @@
 
     UsedParameters.h
     Created: 28 Oct 2018 3:05:50pm
-    Author:  Output Dev Laptop 2
+    Author:  Bruce Dawson
 
   ==============================================================================
 */

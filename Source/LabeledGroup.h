@@ -2,7 +2,7 @@
 //  LabledGroup.h
 //  flexbox - App
 //
-//  Created by Output Dev Laptop 2 on 10/21/18.
+//  Created by Bruce Dawson on 10/21/18.
 //
 
 #ifndef LabledGroup_h
