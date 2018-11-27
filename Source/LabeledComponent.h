@@ -58,8 +58,8 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
     
     void setNumDecimalPlacesToDisplay(int decimals);
-    
     void setInterval(float inNewInterval);
+	void setSkewFactorFromMidPoint(double skewMidPoint);
     
 private:
     

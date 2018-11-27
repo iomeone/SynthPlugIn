@@ -103,11 +103,23 @@ void LabeledComponent::setInterval(float inNewInterval)
                           mSliderRange.getRange().getEnd(),
                           inNewInterval);
     } else {
-        // what are you doing, this is null!
+        // what are you doing, this is not a slider!
         jassertfalse;
     }
 }
 
+
+void LabeledComponent::setSkewFactorFromMidPoint(double skewMidPoint)
+{
+	Slider* slider = mSlider.get();
+	if (slider) {
+		slider->setSkewFactorFromMidPoint(skewMidPoint);
+	}
+	else {
+		// what are you doing, this is null!
+		jassertfalse;
+	}
+}
 void LabeledComponent::constructSlider(AudioProcessorValueTreeState& state,
                                        const String& parameterId)
 {

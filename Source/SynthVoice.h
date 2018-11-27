@@ -28,7 +28,6 @@ public:
 		: parametersPointer(parameters)
 	{
         updateAllParameters();
-        
         constructModalUnits();
 	}
 
@@ -52,32 +51,20 @@ public:
 		noiseOsc.setSampleRate(mSampleRate);
         simpleFilter.setSampleRate(mSampleRate);
         
-        constructModalUnits();
+        constructModalUnits(); //automatically sets sample rate as part of reconstruction.
         
 	}
     //=======================================================
     
-    double oscOutput()
+    double modalOutput()
     {
-        double output = 0.0;
-        
-//        for(int i = 0; i < mOscillators.size(); i ++){
-//
-//            MaxiOsc* osc = mOscillators.getUnchecked(i);
-//            output = output + (osc->sinewave((i+1)*frequency) /(i+1));
-//
-//        }
-        
         for(int i = 0; i < mModalUnits.size(); i ++){
             
             ModalUnit* unit = mModalUnits.getUnchecked(i);
-            output = output + unit->getOutput(frequency);
+            output = output + unit->getOutput();
         }
-        
-        
-        
+           
         output = output * outputScalar;   	//ie. output = output / mOscillators.size();
-        
         return output;
     }
 
@@ -102,13 +89,12 @@ public:
 
 	double delayOutput()
 	{
-        return delayLine.delay(aDSROutput()*oscOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
+        return delayLine.delay(aDSROutput()*modalOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
 	}
 
 	double mixedSignal()
 	{
 		return delayOutput()*0.3;
-		//return aDSROutput()*oscOutput()*0.3;
 	}
 
 	double filterOutput()
@@ -194,10 +180,19 @@ public:
 		/** render our audio */
 		for (int sample = 0; sample < numSamples; ++sample)
 		{
-			/** sample smoothing */
+			updateParametersPerSample();
+
+			//SAMPLE SMOOTHING
 			oscillatorGainSmoothed = oscillatorGainSmoothed - 0.002*(oscillatorGainSmoothed - synthGain);
             frequency = newFrequency;
 
+			//UPDATE MODALUNIT PER SAMPLE
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setPerSample(frequency);
+			}
+			
+			//OUTPUT HERE
 			for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
 			{
                 outputBuffer.addSample(channel, startSample, delayOutput()*oscillatorGainSmoothed); ///////MAIN OUTPUT HERE
@@ -208,6 +203,10 @@ public:
 	
     }
 	
+	void updateParametersPerSample()
+	{
+	}
+
 	void updateParametersEachBlock()
 	{
 		float* inGain = parametersPointer->getRawParameterValue(id_SynthGain);
@@ -232,7 +231,6 @@ public:
         float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
         
         if(numPartialsVar != *numPartialsPtr){
-            
             numPartialsVar = *numPartialsPtr;
             constructModalUnits();
         }
@@ -252,18 +250,11 @@ public:
 
 		float* envReleaseTimePtr = parametersPointer->getRawParameterValue(id_EnvRelease);
 		envReleaseTime = *envReleaseTimePtr;
-
-//        float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
-//
-//        if(numPartialsVar != *numPartialsPtr){
-//
-//            numPartialsVar = *numPartialsPtr;
-//            constructModalUnits();
-//        }
 	}
     
     void updateAllParameters()
     {
+		updateParametersPerSample();
         updateParametersEachBlock();
         updateParametersOnStartNote();
     }
@@ -290,7 +281,8 @@ private:
 	MaxiOsc noiseOsc;
     
     OwnedArray<ModalUnit> mModalUnits;
-    
+
+	double output = 0.0;
     double mSampleRate = 44100.0f;
         
     int adsrCounter = 0;

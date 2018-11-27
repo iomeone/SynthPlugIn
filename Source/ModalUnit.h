@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "MaxiOsc.h"
 #include "EnvelopeGenerator.h"
+#include "SimpleOsc.h"
 
 //==============================================================================
 /*
@@ -24,48 +25,59 @@ public:
     :   mPhase(0),
         mPartialNumber(inPartialNumber)
 	{
-		
 	}
     
     void setSampleRate(double inSampleRate)
     {
-        mSampleRate = inSampleRate;
-        mSamplePeriod = 1.0/mSampleRate;
-        
+        mSampleRate = inSampleRate; 
+		mNyquistFreq = mSampleRate / 2;
         testOsc.setSampleRate(mSampleRate);
+		simpleSin.setSampleRate(mSampleRate);
     }
 
-	void setPerSample(double frequency)
+	void setPerSample(double frequencyIn)
 	{
-		frequencyOsc = frequency;
+		frequency = frequencyIn*mPartialNumber;
 	}
 
-	double getOutput(double frequency)
+	void setPerBlock()
+	{
+
+	}
+	void setOnNoteOn()
+	{
+
+	}
+
+	double getOutput() 
 	{   
-		return sinewave(mPartialNumber*frequency);
+		if (frequency >= 22000) // DOESN'T WORK if (frequency >= mNyquistFreq) -- WHY???
+		{ 
+			output = 0.0f;
+		}
+
+		else
+		{
+			output = testOsc.sinebuf(frequency); // allows ~88 oscillators on laptop core
+			//output = testOsc.sinebuf4(frequency); // allows ~71 oscillators on laptop core
+			//output = simpleSin.sinewave(frequency); // allows ~60 oscillators on laptop core
+		}
+			
+		return output;
     }
     
-    double sinewave(double frequency)
-    {
-        mPhase = mPhase + (frequency * mSamplePeriod);
 
-        if(mPhase > 1.f){
-            mPhase = mPhase - 1.f;
-        }
-        
-        return sinf(mPhase * MathConstants<double>::twoPi);
-    }
-	
 private:
     
 	MaxiOsc testOsc;
+	SimpleOsc simpleSin;
 	//EnvelopeGenerator testADSR;
     
     double mPhase;
     int mPartialNumber;
-    double mSamplePeriod;
     double mSampleRate;
-	double frequencyOsc = 440;
+	double mNyquistFreq;
+	double frequency = 330;
 	double output = 0.0;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModalUnit)
