@@ -14,6 +14,7 @@ double EnvelopeGenerator::nextSample() {
 		
 		currentLevel = stageInitLevel / pow((currentSampleIndex / sampleRate) + 1.0, preAttackExponent);
 		currentSampleIndex++;
+		//currentSampleIndex = currentSampleIndex + samplesPerIncrement;
 
 		if (currentSampleIndex >= (preAttackTimeSeconds * sampleRate)) {
 			enterStage(ENVELOPE_STAGE_ATTACK);
@@ -21,22 +22,24 @@ double EnvelopeGenerator::nextSample() {
 	}
 	else if (currentStage == ENVELOPE_STAGE_ATTACK) {
 	
-			currentLevel = stageInitLevel + (1 - exp(attackXMultiplier*(currentSampleIndex/sampleRate)))*attackOvershoot;
-			currentSampleIndex++;
-			
-			if (currentLevel >= maxLevel) {
-				enterStage(ENVELOPE_STAGE_DECAY);
-			}
+		currentLevel = stageInitLevel + (1 - exp(attackXMultiplier*(currentSampleIndex/sampleRate)))*attackOvershoot;
+		currentSampleIndex++;
+		//currentSampleIndex = currentSampleIndex + samplesPerIncrement;
+
+		if (currentLevel >= maxLevel) {
+			enterStage(ENVELOPE_STAGE_DECAY);
+		}
 	}
 
 	else if (currentStage == ENVELOPE_STAGE_DECAY) {
 		
-			currentLevel = maxLevel / pow((currentSampleIndex/sampleRate)+1.0, decayExponent);
-			currentSampleIndex++;
+		currentLevel = maxLevel / pow((currentSampleIndex/sampleRate)+1.0, decayExponent);
+		currentSampleIndex++;
+		//currentSampleIndex = currentSampleIndex + samplesPerIncrement;
 
-			if (currentLevel <= (sustainLevel + 0.000001)) {
-				enterStage(ENVELOPE_STAGE_SUSTAIN);
-			}	
+		if (currentLevel <= (sustainLevel + 0.000001)) {
+			enterStage(ENVELOPE_STAGE_SUSTAIN);
+		}	
 	}
 
 	else if (currentStage == ENVELOPE_STAGE_SUSTAIN) {
@@ -48,12 +51,13 @@ double EnvelopeGenerator::nextSample() {
 
 	else if (currentStage == ENVELOPE_STAGE_RELEASE) {
 			
-			currentLevel = stageInitLevel / pow((currentSampleIndex/sampleRate)+1.0, releaseExponent);
-			currentSampleIndex++;
+		currentLevel = stageInitLevel / pow((currentSampleIndex/sampleRate)+1.0, releaseExponent);
+		//currentSampleIndex = currentSampleIndex + samplesPerIncrement;
+		currentSampleIndex++;
 
-			if (currentLevel <= 0.0000001) {
-				enterStage(ENVELOPE_STAGE_OFF);
-			}
+		if (currentLevel <= 0.0000001) {
+			enterStage(ENVELOPE_STAGE_OFF);
+		}
 	}
 	else {}
 

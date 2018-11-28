@@ -44,19 +44,14 @@ class EnvelopeGenerator {
 			currentStage(ENVELOPE_STAGE_OFF),
 			currentLevel(0.0),
 			sampleRate(44100.0),
-			currentSampleIndex(0)
-			 {
-				stageValue[ENVELOPE_STAGE_OFF] = 0.0;
-				stageValue[ENVELOPE_STAGE_PREATTACK] = 0.01;
-				stageValue[ENVELOPE_STAGE_ATTACK] = 0.01;
-				stageValue[ENVELOPE_STAGE_DECAY] = 0.5;
-				stageValue[ENVELOPE_STAGE_SUSTAIN] = 0.1;
-				stageValue[ENVELOPE_STAGE_RELEASE] = 1.0;
+			currentSampleIndex(0) 
+		{
+		};
 
-			};
 
 	private:
 		EnvelopeStage currentStage;
+		//int samplesPerIncrement = 1;
 		double velocityValue; // 0.0f - 1.0f
 		double currentLevel;
 		double stageInitLevel;
@@ -74,7 +69,6 @@ class EnvelopeGenerator {
 		double releaseExponent;
 		double attackOvershoot = 1.3; //1.0 to 1.4 range roughly
 		double attackXMultiplier;
-		double stageValue[kNumEnvelopeStages];
 		unsigned long long currentSampleIndex;
 
 	};

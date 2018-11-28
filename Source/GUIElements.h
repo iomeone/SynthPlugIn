@@ -21,13 +21,25 @@ void AudioPlugInAudioProcessorEditor::createNumPartialsGroup()
 	Array<Component*> numPartialsGroupSliders;
 
 	//# PARTIALS
+	LabeledComponent* numVoicesSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_NumVoices);
+	numVoicesSlider->setInterval(1.0f);
+	numVoicesSlider->setNumDecimalPlacesToDisplay(0);
+	//numVoicesSlider->setSkewFactorFromMidPoint(40.0f);
+	numPartialsGroupSliders.add(numVoicesSlider);
+
 	LabeledComponent* numPartialsSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_NumPartials);
 	numPartialsSlider->setInterval(1.0f);
 	numPartialsSlider->setNumDecimalPlacesToDisplay(0);
 	numPartialsSlider->setSkewFactorFromMidPoint(40.0f);
 	numPartialsGroupSliders.add(numPartialsSlider);
 
-	LabeledGroup* numPartialsGroup = new LabeledGroup("# Partials", numPartialsGroupSliders);
+	LabeledComponent* samplesPerIncrementSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_SamplesPerIncrement);
+	samplesPerIncrementSlider->setInterval(1);
+	samplesPerIncrementSlider->setNumDecimalPlacesToDisplay(0);
+	//samplesPerIncrementSlider->setSkewFactorFromMidPoint(40);
+	numPartialsGroupSliders.add(samplesPerIncrementSlider);
+	
+	LabeledGroup* numPartialsGroup = new LabeledGroup("Setup", numPartialsGroupSliders);
 	mLabeledGroups.add(numPartialsGroup);
 	addAndMakeVisible(numPartialsGroup);
 	//gainGroup->setLookAndFeel(&labeledGroupLookAndFeel);
@@ -59,8 +71,8 @@ void AudioPlugInAudioProcessorEditor::createEnvelopeGroup()
 	//ATTACK SLIDER
 	LabeledComponent* envAttackSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvAttack);
 	envAttackSlider->setInterval(0.001);
-	envAttackSlider->setNumDecimalPlacesToDisplay(2);
-	envAttackSlider->setSkewFactorFromMidPoint(0.01); 
+	envAttackSlider->setNumDecimalPlacesToDisplay(3);
+	//envAttackSlider->setSkewFactorFromMidPoint(0.01); 
 	envelopeGroupSliders.add(envAttackSlider);
 
 	//DECAY SLIDER

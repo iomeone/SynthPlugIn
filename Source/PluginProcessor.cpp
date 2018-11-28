@@ -28,13 +28,15 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
         
         /** declare our parameters */
         std::make_unique<AudioParameterFloat> (id_SynthGain, "Gain", NormalisableRange<float>(0.0f, 2.0f), 1.0f),
-        
+		
+		std::make_unique<AudioParameterInt>(id_NumVoices, "# Voices", 1, 200, 50),
+		std::make_unique<AudioParameterInt>(id_NumPartials, "# Partials", 1, 200, 50),
+		std::make_unique<AudioParameterInt>(id_SamplesPerIncrement, "Samples/Inc", 1, 900, 50), 
+
         std::make_unique<AudioParameterFloat> (id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
         std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 3.0f),
         std::make_unique<AudioParameterFloat> (id_EnvSustain, "Sustain", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_EnvRelease, "Release", NormalisableRange<float>(0.001f, 4.0f), 0.02f),
-        
-        std::make_unique<AudioParameterInt>   (id_NumPartials, "# Partials", 1, 200, 50),
         
         std::make_unique<AudioParameterFloat> (id_DelTime, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.5f),
         std::make_unique<AudioParameterFloat> (id_DelFeedback, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),

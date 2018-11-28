@@ -72,38 +72,47 @@ public:
 
 	double aDSROutput()
 	{
-        return aDSR.nextSample();
+        //return aDSR.nextSample();
         
-		/* TECHNIQUE FOR REDUCING THE OUTPUT OF THE ADSR TO ONCE EVERY 10 SAMPLES (but need to change envelope internally to add 10 per sample to compensate)
-        if(adsrCounter == 0){
-            adsrValue = aDSR.nextSample();
-        }
-        else if(adsrCounter >= 10){
-            adsrCounter = 0;
-        }
-        else {
-            adsrCounter = adsrCounter + 1;
-        }
-        return adsrValue;*/
+		//TECHNIQUE FOR REDUCING THE OUTPUT OF THE ADSR TO ONCE EVERY 10 SAMPLES (but need to change envelope internally to add 10 per sample to compensate)
+		aDSR.setSampleRate(mSampleRate/samplesPerIncrementVar); //eventSampleRAte
+
+		//DBG("eventSampleRate = " << eventSampleRate << " sampleRate = " << mSampleRate << " samplesPerIncrement = " << samplesPerIncrementVar );
+
+		//if(adsrCounter == 0){
+  //          adsrValue = aDSR.nextSample();
+		//	adsrCounter = adsrCounter + 1; //ERROR IS HERE - NEXT RUN WILL BE EQUAL TO 2 NOT 1
+  //      }
+  //      else if(adsrCounter >= samplesPerIncrementVar){
+  //          adsrCounter = 0;
+  //      }
+  //      else {
+  //          adsrCounter = adsrCounter + 1;
+  //      }
+  //      return adsrValue;
+		if (adsrCounter >= samplesPerIncrementVar) {
+			adsrValue = aDSR.nextSample();
+			adsrCounter = 1;
+		}
+		else {
+			adsrCounter++;
+		}
+		return adsrValue;
 	}
 
 	double delayOutput()
 	{
-        return delayLine.delay(aDSROutput()*modalOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
+        return delayLine.delay(modalOutput()*aDSROutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
 	}
 
-	double mixedSignal()
-	{
-		return delayOutput()*0.3;
-	}
 
-	double filterOutput()
+	double filterOutput() //resonant bandpass test
 	{
 		return simpleFilter.processAudioSample(noiseImpulse(), 1);
 	}
 	//=======================================================
 
-	double noiseImpulse()
+	double noiseImpulse() //exciter test
 	{
 		return (envImpulse.nextSample() * noiseOsc.noise()) * 0.3;
 	}
@@ -113,6 +122,18 @@ public:
     void startNote (int midiNoteNumber, float velocity, SynthesiserSound* sound, int currentPitchWheelPosition) override
     {
 		updateParametersOnStartNote();
+
+		//UPDATE MODALUNIT ON START NOTE
+		for (int i = 0; i < mModalUnits.size(); i++) {
+			ModalUnit* unit = mModalUnits.getUnchecked(i);
+			unit->setVelocity(velocity);
+			unit->setAttackSeconds(envAttackTime);
+			unit->setDecaySeconds(envDecayTime);
+			unit->setSustainPercent(envSustainLevel);
+			unit->setReleaseSeconds(envReleaseTime);
+			unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
+			//        unit->enterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
+		}
 
 		velocityScaled = velocity;
         newFrequency = MidiMessage::getMidiNoteInHertz(midiNoteNumber);
@@ -146,6 +167,12 @@ public:
     {
 		aDSR.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
 		
+		//UPDATE MODALUNIT ON STOP NOTE
+		for (int i = 0; i < mModalUnits.size(); i++) {
+			ModalUnit* unit = mModalUnits.getUnchecked(i);
+			unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
+		}
+
         allowTailOff = false;
         
         if (velocity == 0)
@@ -175,7 +202,14 @@ public:
 
 		/** block smoothing */
 		// oscillatorGainSmoothed = oscillatorGainSmoothed - 0.01*(oscillatorGainSmoothed - oscillatorGain);
-
+		
+		//UPDATE MODALUNIT PER BLOCK
+		for (int i = 0; i < mModalUnits.size(); i++) {
+			ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setSampleRate(mSampleRate);
+				//unit->setEventSampleRate(eventSampleRate);
+				unit->setSamplesPerIncrement(samplesPerIncrementVar);
+		}
 
 		/** render our audio */
 		for (int sample = 0; sample < numSamples; ++sample)
@@ -189,7 +223,7 @@ public:
 			//UPDATE MODALUNIT PER SAMPLE
 			for (int i = 0; i < mModalUnits.size(); i++) {
 				ModalUnit* unit = mModalUnits.getUnchecked(i);
-				unit->setPerSample(frequency);
+					unit->setFrequency(frequency);
 			}
 			
 			//OUTPUT HERE
@@ -210,11 +244,9 @@ public:
 	void updateParametersEachBlock()
 	{
 		float* inGain = parametersPointer->getRawParameterValue(id_SynthGain);
-		//        oscillatorGain = *parametersPointer->getRawParameterValue(id_SynthGain);
-
-		if (synthGain != *inGain) {
+			if (synthGain != *inGain) {
 			synthGain = *inGain;
-		}
+			}
 
 		float* delayTimePtr = parametersPointer->getRawParameterValue(id_DelTime); 
 		delayTimeVar = *delayTimePtr; 
@@ -229,12 +261,20 @@ public:
 		delayPrePostMixVar = *delayPrePostMixPtr;
         
         float* numPartialsPtr = parametersPointer->getRawParameterValue(id_NumPartials);
-        
-        if(numPartialsVar != *numPartialsPtr){
-            numPartialsVar = *numPartialsPtr;
-            constructModalUnits();
-        }
-		
+			if(numPartialsVar != *numPartialsPtr){
+			numPartialsVar = *numPartialsPtr;
+			constructModalUnits();
+			}
+	
+		float* numVoicesPtr = parametersPointer->getRawParameterValue(id_NumVoices); //WHAT TO DO?
+
+		float* samplesPerIncrementPtr = parametersPointer->getRawParameterValue(id_SamplesPerIncrement); 
+			if (samplesPerIncrementVar != *samplesPerIncrementPtr) {
+				samplesPerIncrementVar = *samplesPerIncrementPtr;
+				eventSampleRate = mSampleRate / samplesPerIncrementVar;
+			}
+
+
 	}
 
 	void updateParametersOnStartNote()
@@ -284,8 +324,10 @@ private:
 
 	double output = 0.0;
     double mSampleRate = 44100.0f;
-        
-    int adsrCounter = 0;
+	double eventSampleRate = 44100.0f;
+	double samplesPerIncrementVar = 1.0f;
+
+    int adsrCounter = 1;
     double adsrValue = 0;
     
     double outputScalar = 1;

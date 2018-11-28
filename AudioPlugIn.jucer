@@ -4,6 +4,8 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="xcqMQq" name="AudioPlugIn">
     <GROUP id="{1FB0656C-FF68-2BE1-8A5F-BD3F35BA2C55}" name="Source">
+      <FILE id="b0hNXC" name="GlobalFunctions.h" compile="0" resource="0"
+            file="Source/GlobalFunctions.h"/>
       <FILE id="h5vJxV" name="EventDelay.h" compile="0" resource="0" file="Source/EventDelay.h"/>
       <FILE id="kpoDYg" name="SimpleOsc.h" compile="0" resource="0" file="Source/SimpleOsc.h"/>
       <FILE id="TCHUUm" name="LabeledComponent.cpp" compile="1" resource="0"
