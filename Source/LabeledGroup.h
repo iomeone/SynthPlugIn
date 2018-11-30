@@ -9,7 +9,7 @@
 #define LabledGroup_h
 
 #include "JuceHeader.h"
-#include "LabeledSlider.h"
+#include "LabeledComponent.h"
 
 class LabeledGroup
 :   public GroupComponent

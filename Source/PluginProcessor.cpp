@@ -11,7 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-static const int numVoices = 6;
+static const int numVoices = 1;
 
 //==============================================================================
 AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
@@ -29,16 +29,19 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
         /** declare our parameters */
         std::make_unique<AudioParameterFloat> (id_SynthGain, "Gain", NormalisableRange<float>(0.0f, 2.0f), 1.0f),
 		
-		std::make_unique<AudioParameterInt>(id_NumVoices, "# Voices", 1, 200, 50),
-		std::make_unique<AudioParameterInt>(id_NumPartials, "# Partials", 1, 200, 50),
-		std::make_unique<AudioParameterInt>(id_SamplesPerIncrement, "Samples/Inc", 1, 900, 50), 
+		std::make_unique<AudioParameterInt> (id_NumVoices, "# Voices", 1, 12, 6),
+		std::make_unique<AudioParameterInt> (id_NumPartials, "# Partials", 1, 200, 25),
+		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 900, 5), 
 
+		std::make_unique<AudioParameterFloat> (id_EnvPreAttack, "Pre-Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
+		std::make_unique<AudioParameterFloat> (id_EnvPreAttackDecay, "Pre-Decay", NormalisableRange<float>(0.001f, 2.0f), 0.1f),
         std::make_unique<AudioParameterFloat> (id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
         std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 3.0f),
         std::make_unique<AudioParameterFloat> (id_EnvSustain, "Sustain", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_EnvRelease, "Release", NormalisableRange<float>(0.001f, 4.0f), 0.02f),
         
-        std::make_unique<AudioParameterFloat> (id_DelTime, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.5f),
+		std::make_unique<AudioParameterBool> (id_DelOnOff, "Bypass", true),
+		std::make_unique<AudioParameterFloat> (id_DelTime, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.5f),
         std::make_unique<AudioParameterFloat> (id_DelFeedback, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
         std::make_unique<AudioParameterFloat> (id_DelPrePostMix, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_DelDWMix, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.2f),
@@ -139,7 +142,6 @@ void AudioPlugInAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 	lastSampleRate = sampleRate;
 	mySynth.setCurrentPlaybackSampleRate(lastSampleRate);
 	
-
 }
 
 void AudioPlugInAudioProcessor::releaseResources()

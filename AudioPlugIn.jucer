@@ -22,9 +22,6 @@
       <FILE id="roE3l3" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="peLiTK" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="CTApSh" name="LabeledSlider.cpp" compile="1" resource="0"
-            file="Source/LabeledSlider.cpp"/>
-      <FILE id="OZo4qW" name="LabeledSlider.h" compile="0" resource="0" file="Source/LabeledSlider.h"/>
       <FILE id="UBlD74" name="LookAndFeel.h" compile="0" resource="0" file="Source/LookAndFeel.h"/>
       <FILE id="JL99dU" name="MaxiOsc.cpp" compile="1" resource="0" file="Source/MaxiOsc.cpp"/>
       <FILE id="dymVwK" name="MaxiOsc.h" compile="0" resource="0" file="Source/MaxiOsc.h"/>

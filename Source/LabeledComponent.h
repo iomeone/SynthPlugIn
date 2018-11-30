@@ -92,7 +92,7 @@ private:
     
     std::unique_ptr<Label> mLabel;
     std::unique_ptr<Slider> mSlider;
-    std::unique_ptr<Button> mButton;
+    std::unique_ptr<TextButton> mButton;
     std::unique_ptr<ComboBox> mComboBox;
     
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> mSliderAttachment;

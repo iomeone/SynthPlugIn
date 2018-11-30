@@ -33,7 +33,21 @@ class EnvelopeGenerator {
 
 		void setSampleRate(double newSampleRate)		{ sampleRate = newSampleRate; }
 		void setVelocityValue(float inVelocityValue)	{ velocityValue = inVelocityValue; }
-		void setAttackSeconds(float inAttackSeconds)	{ attackTimeSeconds = inAttackSeconds; attackTimeSeconds = jmax(attackTimeSeconds, 0.001);  attackTimeSeconds = attackTimeSeconds * velocityValue; }
+		
+		void setPreAttackSeconds(float inPreAttackSeconds) { 
+			preAttackTimeSeconds = inPreAttackSeconds; 
+			preAttackTimeSeconds = jmax(preAttackTimeSeconds, 0.001); 
+		}
+		void setPreAttackDecaySeconds(float inPreAttackDecaySeconds) {
+			preAttackDecayTimeSeconds = inPreAttackDecaySeconds;
+			preAttackDecayTimeSeconds = jmax(preAttackDecayTimeSeconds, 0.001);
+		}
+		void setAttackSeconds(float inAttackSeconds) {
+			attackTimeSeconds = inAttackSeconds; 
+			attackTimeSeconds = jmax(attackTimeSeconds, 0.001);  
+			attackTimeSeconds = attackTimeSeconds /* *velocityValue;*/;
+		} 
+
 		void setDecaySeconds(float inDecaySeconds)		{ decayTimeSeconds = inDecaySeconds; decayTimeSeconds = jmax(decayTimeSeconds, 0.001); }
 		void setReleaseSeconds(float inReleaseSeconds)	{ releaseTimeSeconds = inReleaseSeconds; releaseTimeSeconds = jmax(releaseTimeSeconds, 0.001); }
 		void setSustainPercent(float inSustainPercent)	{ sustainPercent = inSustainPercent; }

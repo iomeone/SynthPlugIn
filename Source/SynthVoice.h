@@ -50,6 +50,7 @@ public:
 		testOsc.setSampleRate(mSampleRate);
 		noiseOsc.setSampleRate(mSampleRate);
         simpleFilter.setSampleRate(mSampleRate);
+		pitchDelay.setSampleRate(mSampleRate, 2.0);
         
         constructModalUnits(); //automatically sets sample rate as part of reconstruction.
         
@@ -71,25 +72,12 @@ public:
 	//=======================================================
 
 	double aDSROutput()
-	{
-        //return aDSR.nextSample();
-        
+	{        
 		//TECHNIQUE FOR REDUCING THE OUTPUT OF THE ADSR TO ONCE EVERY 10 SAMPLES (but need to change envelope internally to add 10 per sample to compensate)
-		aDSR.setSampleRate(mSampleRate/samplesPerIncrementVar); //eventSampleRAte
+		aDSR.setSampleRate(eventSampleRate); //eventSampleRAte
 
 		//DBG("eventSampleRate = " << eventSampleRate << " sampleRate = " << mSampleRate << " samplesPerIncrement = " << samplesPerIncrementVar );
 
-		//if(adsrCounter == 0){
-  //          adsrValue = aDSR.nextSample();
-		//	adsrCounter = adsrCounter + 1; //ERROR IS HERE - NEXT RUN WILL BE EQUAL TO 2 NOT 1
-  //      }
-  //      else if(adsrCounter >= samplesPerIncrementVar){
-  //          adsrCounter = 0;
-  //      }
-  //      else {
-  //          adsrCounter = adsrCounter + 1;
-  //      }
-  //      return adsrValue;
 		if (adsrCounter >= samplesPerIncrementVar) {
 			adsrValue = aDSR.nextSample();
 			adsrCounter = 1;
@@ -102,8 +90,13 @@ public:
 
 	double delayOutput()
 	{
-        return delayLine.delay(modalOutput()*aDSROutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
-	}
+		if (delayOnOffVar = true) {
+			return delayLine.delay(modalOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
+		}
+		else {
+			return modalOutput();
+		}
+		}
 
 
 	double filterOutput() //resonant bandpass test
@@ -127,12 +120,13 @@ public:
 		for (int i = 0; i < mModalUnits.size(); i++) {
 			ModalUnit* unit = mModalUnits.getUnchecked(i);
 			unit->setVelocity(velocity);
+			unit->setPreAttackSeconds(envPreAttackTime);
+			unit->setPreAttackDecaySeconds(envPreAttackDecayTime);
 			unit->setAttackSeconds(envAttackTime);
 			unit->setDecaySeconds(envDecayTime);
 			unit->setSustainPercent(envSustainLevel);
 			unit->setReleaseSeconds(envReleaseTime);
-			unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
-			//        unit->enterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
+			unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
 		}
 
 		velocityScaled = velocity;
@@ -147,8 +141,8 @@ public:
 		aDSR.setDecaySeconds(envDecayTime);
 		aDSR.setSustainPercent(envSustainLevel);
 		aDSR.setReleaseSeconds(envReleaseTime);
-        aDSR.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
-//        aDSR.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
+        //aDSR.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
+        aDSR.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
 				
 		envImpulse.setVelocityValue(velocity);
 		envImpulse.setAttackSeconds(0.01);
@@ -175,8 +169,8 @@ public:
 
         allowTailOff = false;
         
-        if (velocity == 0)
-            clearCurrentNote();
+       // if (velocity == 0)
+        clearCurrentNote();
     }
     
     //=======================================================
@@ -207,7 +201,7 @@ public:
 		for (int i = 0; i < mModalUnits.size(); i++) {
 			ModalUnit* unit = mModalUnits.getUnchecked(i);
 				unit->setSampleRate(mSampleRate);
-				//unit->setEventSampleRate(eventSampleRate);
+				unit->setEventSampleRate(eventSampleRate);
 				unit->setSamplesPerIncrement(samplesPerIncrementVar);
 		}
 
@@ -215,22 +209,24 @@ public:
 		for (int sample = 0; sample < numSamples; ++sample)
 		{
 			updateParametersPerSample();
-
+			
 			//SAMPLE SMOOTHING
 			oscillatorGainSmoothed = oscillatorGainSmoothed - 0.002*(oscillatorGainSmoothed - synthGain);
-            frequency = newFrequency;
+            
+			frequency = newFrequency;
+			frequencyDelayed = pitchDelay.pureDelay(frequency, envPreAttackTime);
 
 			//UPDATE MODALUNIT PER SAMPLE
 			for (int i = 0; i < mModalUnits.size(); i++) {
 				ModalUnit* unit = mModalUnits.getUnchecked(i);
 					unit->setFrequency(frequency);
+					unit->setFrequencyDelayed(frequencyDelayed);
 			}
 			
 			//OUTPUT HERE
 			for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
 			{
                 outputBuffer.addSample(channel, startSample, delayOutput()*oscillatorGainSmoothed); ///////MAIN OUTPUT HERE
-//                outputBuffer.addSample(channel, startSample, modalUnitOutput()*oscillatorGainSmoothed);
 			}
 			++startSample;
 		}
@@ -239,6 +235,8 @@ public:
 	
 	void updateParametersPerSample()
 	{
+		float* envPreAttackTimePtr = parametersPointer->getRawParameterValue(id_EnvPreAttack);
+		envPreAttackTime = *envPreAttackTimePtr;
 	}
 
 	void updateParametersEachBlock()
@@ -247,6 +245,9 @@ public:
 			if (synthGain != *inGain) {
 			synthGain = *inGain;
 			}
+
+		float* delayOnOffPtr = parametersPointer->getRawParameterValue(id_DelOnOff);
+		delayOnOffVar = *delayOnOffPtr;
 
 		float* delayTimePtr = parametersPointer->getRawParameterValue(id_DelTime); 
 		delayTimeVar = *delayTimePtr; 
@@ -269,18 +270,27 @@ public:
 		float* numVoicesPtr = parametersPointer->getRawParameterValue(id_NumVoices); //WHAT TO DO?
 
 		float* samplesPerIncrementPtr = parametersPointer->getRawParameterValue(id_SamplesPerIncrement); 
-			if (samplesPerIncrementVar != *samplesPerIncrementPtr) {
+		samplesPerIncrementVar = *samplesPerIncrementPtr;
+		eventSampleRate = mSampleRate / samplesPerIncrementVar;
+		
+		/*if (samplesPerIncrementVar != *samplesPerIncrementPtr) {
 				samplesPerIncrementVar = *samplesPerIncrementPtr;
 				eventSampleRate = mSampleRate / samplesPerIncrementVar;
-			}
+			}*/
 
 
 	}
 
 	void updateParametersOnStartNote()
 	{
-		float* envAttackTimePtr = parametersPointer->getRawParameterValue(id_EnvAttack); //IS THIS NECESSARY/CORRECT?
-		envAttackTime = *envAttackTimePtr;  //IS THIS NECESSARY/CORRECT?
+		float* envPreAttackTimePtr = parametersPointer->getRawParameterValue(id_EnvPreAttack);
+		envPreAttackTime = *envPreAttackTimePtr;
+
+		float* envPreAttackDecayTimePtr = parametersPointer->getRawParameterValue(id_EnvPreAttackDecay);
+		envPreAttackDecayTime = *envPreAttackDecayTimePtr;
+		
+		float* envAttackTimePtr = parametersPointer->getRawParameterValue(id_EnvAttack);
+		envAttackTime = *envAttackTimePtr;
 
 		float* envDecayTimePtr = parametersPointer->getRawParameterValue(id_EnvDecay);
 		envDecayTime = *envDecayTimePtr;
@@ -327,6 +337,10 @@ private:
 	double eventSampleRate = 44100.0f;
 	double samplesPerIncrementVar = 1.0f;
 
+	bool delayOnOffVar = true;
+	MaxiDelayline pitchDelay;
+	double frequencyDelayed = 400;
+
     int adsrCounter = 1;
     double adsrValue = 0;
     
@@ -346,6 +360,8 @@ private:
 	float envDecayTime = 0.2f;
 	float envSustainLevel = 0.0f;
 	float envReleaseTime = 0.02f;
+	float envPreAttackTime = 0.0f;
+	float envPreAttackDecayTime = 0.0f;
 
 	int numPartialsVar = 20;
 

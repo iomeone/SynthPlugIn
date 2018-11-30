@@ -81,6 +81,11 @@ void LabeledComponent::labelTextChanged (Label* labelThatHasChanged)
 
 void LabeledComponent::buttonClicked(Button* button)
 {
+	/*if (button->getState() = true) {
+		mButton->setState false;
+	}
+	else {}
+	}*/
     // do something..
 }
 
@@ -161,13 +166,15 @@ void LabeledComponent::constructButton(AudioProcessorValueTreeState& state,
     
     mName = parameter->name;
     
-    TextButton* button = new TextButton(mName);
+    TextButton* button = new TextButton(); //TextButton(mName); for having button named.
     button->setClickingTogglesState(true);
     button->setToggleState(false, dontSendNotification);
-    mButton = std::unique_ptr<Button>(button);
+    mButton = std::unique_ptr<TextButton>(button);
+	addAndMakeVisible(button);
     
     AudioProcessorValueTreeState::ButtonAttachment* attachment =
     new AudioProcessorValueTreeState::ButtonAttachment(state, parameterId, *button);
+	mButtonAttachment = std::unique_ptr<AudioProcessorValueTreeState::ButtonAttachment>(attachment);
 }
 
 void LabeledComponent::constructComboBox(AudioProcessorValueTreeState& state,
@@ -204,6 +211,23 @@ void LabeledComponent::sliderResized()
 
 void LabeledComponent::buttonResized()
 {
+	juce::Rectangle<int> generalBounds = juce::Rectangle<int>(0, 0, getWidth(), getHeight()).reduced(componentMargin);
+
+	float buttonWidthPercent = 0.7f;
+	float buttonHeight = 15.0f;
+	float buttonWidth = buttonHeight * 1.5;
+	float buttonVerticalShift = 2.0f;
+
+	juce::Rectangle<int> buttonBounds = juce::Rectangle<int>(
+		//(generalBounds.getWidth() * 0.5) - (generalBounds.getWidth() * buttonWidthPercent * 0.5) + componentMargin,
+		(generalBounds.getWidth() * 0.5) - (buttonWidth * 0.5) + componentMargin,
+		(generalBounds.getHeight() * 0.5 - (buttonHeight * 0.5)) + componentMargin + buttonVerticalShift,
+		//generalBounds.getWidth() * buttonWidthPercent,
+		buttonWidth,
+		buttonHeight);
+
+	TextButton* button = mButton.get();
+	button->setBounds(buttonBounds);
 }
 
 void LabeledComponent::comboBoxResized()

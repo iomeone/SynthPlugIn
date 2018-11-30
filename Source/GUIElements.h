@@ -68,12 +68,19 @@ void AudioPlugInAudioProcessorEditor::createEnvelopeGroup()
 {
 	Array<Component*> envelopeGroupSliders;
     
-	//ATTACK SLIDER
-	LabeledComponent* envAttackSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvAttack);
-	envAttackSlider->setInterval(0.001);
-	envAttackSlider->setNumDecimalPlacesToDisplay(3);
-	//envAttackSlider->setSkewFactorFromMidPoint(0.01); 
-	envelopeGroupSliders.add(envAttackSlider);
+	//PRE-ATTACK SLIDER
+	LabeledComponent* envPreAttackSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvPreAttack);
+	envPreAttackSlider->setInterval(0.001);
+	envPreAttackSlider->setNumDecimalPlacesToDisplay(3);
+	//envPreAttackSlider->setSkewFactorFromMidPoint(0.01); 
+	envelopeGroupSliders.add(envPreAttackSlider);
+
+	//PRE-ATTACK DECAY SLIDER
+	LabeledComponent* envPreAttackDecaySlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvPreAttackDecay);
+	envPreAttackDecaySlider->setInterval(0.001);
+	envPreAttackDecaySlider->setNumDecimalPlacesToDisplay(3);
+	//envPreAttackDecaySlider->setSkewFactorFromMidPoint(0.01); 
+	envelopeGroupSliders.add(envPreAttackDecaySlider);
 
 	//DECAY SLIDER
 	LabeledComponent* envDecaySlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvDecay);
@@ -107,6 +114,11 @@ void AudioPlugInAudioProcessorEditor::createEnvelopeGroup()
 void AudioPlugInAudioProcessorEditor::createDelayGroup()
 {
 	Array<Component*> delayGroupSliders;
+
+	//ON/OFF BUTTON
+	LabeledComponent* delayOnOffButton = new LabeledComponent(kLabeledComponentStyle_Button, processor.parameters, id_DelOnOff);
+	//delayOnOffButton->setInterval(0.001);
+	delayGroupSliders.add(delayOnOffButton);
 
 	//TIME SLIDER
 	LabeledComponent* delayTimeSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_DelTime);
