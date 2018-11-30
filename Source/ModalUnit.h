@@ -92,7 +92,7 @@ public:
     
 	double getOutput()
 	{
-		output = getSinOutput() * getADSROutput();
+		output = getSinOutput(); // *getADSROutput();
 		return output;
 	}
 

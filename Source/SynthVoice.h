@@ -74,9 +74,9 @@ public:
 	double aDSROutput()
 	{        
 		//TECHNIQUE FOR REDUCING THE OUTPUT OF THE ADSR TO ONCE EVERY 10 SAMPLES (but need to change envelope internally to add 10 per sample to compensate)
-		aDSR.setSampleRate(eventSampleRate); //eventSampleRAte
+		//return aDSR.nextSample();
 
-		//DBG("eventSampleRate = " << eventSampleRate << " sampleRate = " << mSampleRate << " samplesPerIncrement = " << samplesPerIncrementVar );
+		aDSR.setSampleRate(eventSampleRate); //eventSampleRate
 
 		if (adsrCounter >= samplesPerIncrementVar) {
 			adsrValue = aDSR.nextSample();
@@ -91,7 +91,7 @@ public:
 	double delayOutput()
 	{
 		if (delayOnOffVar = true) {
-			return delayLine.delay(modalOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
+			return delayLine.delay(modalOutput()*aDSROutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
 		}
 		else {
 			return modalOutput();
@@ -137,6 +137,8 @@ public:
 		simpleFilter.setQ(1256); // add function setModalQ needs to take decay time in seconds, and note pitch as inputs and multiple by 2 pi
 
 		aDSR.setVelocityValue(velocity);
+		aDSR.setPreAttackSeconds(envPreAttackTime);
+		aDSR.setPreAttackDecaySeconds(envPreAttackDecayTime);
 		aDSR.setAttackSeconds(envAttackTime);
 		aDSR.setDecaySeconds(envDecayTime);
 		aDSR.setSustainPercent(envSustainLevel);
@@ -194,6 +196,7 @@ public:
 		/** update our internal parameters */
 		updateParametersEachBlock();
 
+		//DBG("Stage = " << aDSR.getCurrentStage() << " Index = " << aDSR.getCurrentSampleIndex() << " Time = " << envPreAttackTime << " SR = " << aDSR.getSampleRate() << " PreLength = " << aDSR.getPreAttackSampleLength() << " Output = " << aDSROutput() << " FreqDelayed = " << frequencyDelayed);
 		/** block smoothing */
 		// oscillatorGainSmoothed = oscillatorGainSmoothed - 0.01*(oscillatorGainSmoothed - oscillatorGain);
 		
@@ -224,7 +227,7 @@ public:
 			}
 			
 			//OUTPUT HERE
-			for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
+			for (int channel = 0; channel < 1 /*outputBuffer.getNumChannels()*/; ++channel)
 			{
                 outputBuffer.addSample(channel, startSample, delayOutput()*oscillatorGainSmoothed); ///////MAIN OUTPUT HERE
 			}
@@ -235,8 +238,6 @@ public:
 	
 	void updateParametersPerSample()
 	{
-		float* envPreAttackTimePtr = parametersPointer->getRawParameterValue(id_EnvPreAttack);
-		envPreAttackTime = *envPreAttackTimePtr;
 	}
 
 	void updateParametersEachBlock()
@@ -283,6 +284,7 @@ public:
 
 	void updateParametersOnStartNote()
 	{
+		
 		float* envPreAttackTimePtr = parametersPointer->getRawParameterValue(id_EnvPreAttack);
 		envPreAttackTime = *envPreAttackTimePtr;
 

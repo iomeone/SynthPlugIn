@@ -15,21 +15,24 @@
 
 class EnvelopeGenerator {
 
-	public:
-		enum EnvelopeStage {
-			ENVELOPE_STAGE_OFF = 0, 
-			ENVELOPE_STAGE_PREATTACK,
-			ENVELOPE_STAGE_ATTACK,
-			ENVELOPE_STAGE_DECAY,
-			ENVELOPE_STAGE_SUSTAIN,
-			ENVELOPE_STAGE_RELEASE,
-			kNumEnvelopeStages
-		};
+public:
+	enum EnvelopeStage {
+		ENVELOPE_STAGE_OFF = 0,
+		ENVELOPE_STAGE_PREATTACK,
+		ENVELOPE_STAGE_ATTACK,
+		ENVELOPE_STAGE_DECAY,
+		ENVELOPE_STAGE_SUSTAIN,
+		ENVELOPE_STAGE_RELEASE,
+		kNumEnvelopeStages
+	};
 
-		void enterStage(EnvelopeStage newStage);
-		double nextSample();
-		
-		inline EnvelopeStage getCurrentStage() const { return currentStage; };
+	void enterStage(EnvelopeStage newStage);
+	double nextSample();
+
+	inline EnvelopeStage getCurrentStage() const { return currentStage; };
+	inline double getCurrentSampleIndex() const { return currentSampleIndex; };
+	inline double getPreAttackSampleLength() const {return preAttackSampleLength;};
+	inline double getSampleRate() const { return sampleRate; };
 
 		void setSampleRate(double newSampleRate)		{ sampleRate = newSampleRate; }
 		void setVelocityValue(float inVelocityValue)	{ velocityValue = inVelocityValue; }
@@ -53,7 +56,6 @@ class EnvelopeGenerator {
 		void setSustainPercent(float inSustainPercent)	{ sustainPercent = inSustainPercent; }
 		void setAttackOvershoot(float inAttackOvershoot) { attackOvershoot = inAttackOvershoot; }
 
-
 		EnvelopeGenerator() : //constructor?
 			currentStage(ENVELOPE_STAGE_OFF),
 			currentLevel(0.0),
@@ -73,6 +75,7 @@ class EnvelopeGenerator {
 		double maxLevel = 0.0;
 		double preAttackTimeSeconds = 0.010; // fixed time to switch to attack
 		double preAttackDecayTimeSeconds = 0.01; // time to 1/e
+		double preAttackSampleLength = 1000;
 		double preAttackExponent;
 		double attackTimeSeconds = 0.01;
 		double decayTimeSeconds = 0.9;
@@ -83,7 +86,7 @@ class EnvelopeGenerator {
 		double releaseExponent;
 		double attackOvershoot = 1.3; //1.0 to 1.4 range roughly
 		double attackXMultiplier;
-		unsigned long long currentSampleIndex;
+		unsigned long long currentSampleIndex = 0.0;
 
 	};
 

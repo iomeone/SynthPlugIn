@@ -9,7 +9,6 @@
 */
 
 #include "LabeledComponent.h"
-
 #include "GlobalConstants.h"
 
 LabeledComponent::LabeledComponent(LabeledComponentStyle inStyle,
@@ -184,7 +183,19 @@ void LabeledComponent::constructComboBox(AudioProcessorValueTreeState& state,
     state.getParameter(parameterId);
     
     mName = parameter->name;
+	
+	ComboBox* combo = new ComboBox(); 
+	combo->setEditableText(false);
+	combo->setJustificationType(Justification::centred);
+	mComboBox = std::unique_ptr<ComboBox>(combo);
+	addAndMakeVisible(combo);
+
+	AudioProcessorValueTreeState::ComboBoxAttachment* attachment =
+		new AudioProcessorValueTreeState::ComboBoxAttachment(state, parameterId, *combo);
+	mComboBoxAttachment = std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment>(attachment);
+
 }
+
 
 void LabeledComponent::sliderResized()
 {
@@ -214,8 +225,8 @@ void LabeledComponent::buttonResized()
 	juce::Rectangle<int> generalBounds = juce::Rectangle<int>(0, 0, getWidth(), getHeight()).reduced(componentMargin);
 
 	float buttonWidthPercent = 0.7f;
-	float buttonHeight = 15.0f;
-	float buttonWidth = buttonHeight * 1.5;
+	float buttonHeight = 16.0f;
+	float buttonWidth = 22.0;
 	float buttonVerticalShift = 2.0f;
 
 	juce::Rectangle<int> buttonBounds = juce::Rectangle<int>(
@@ -232,7 +243,23 @@ void LabeledComponent::buttonResized()
 
 void LabeledComponent::comboBoxResized()
 {
-    
+	juce::Rectangle<int> generalBounds = juce::Rectangle<int>(0, 0, getWidth(), getHeight()).reduced(componentMargin);
+
+	float buttonWidthPercent = 0.7f;
+	float buttonHeight = 14.0f;
+	float buttonWidth = 35.0;
+	float buttonVerticalShift = 2.0f;
+
+	juce::Rectangle<int> comboBoxBounds = juce::Rectangle<int>(
+		//(generalBounds.getWidth() * 0.5) - (generalBounds.getWidth() * buttonWidthPercent * 0.5) + componentMargin,
+		(generalBounds.getWidth() * 0.5) - (buttonWidth * 0.5) + componentMargin,
+		(generalBounds.getHeight() * 0.5 - (buttonHeight * 0.5)) + componentMargin + buttonVerticalShift,
+		//generalBounds.getWidth() * buttonWidthPercent,
+		buttonWidth,
+		buttonHeight);
+
+	ComboBox* combo = mComboBox.get();
+	combo->setBounds(comboBoxBounds);
 }
 
 void LabeledComponent::updateLabelText()
