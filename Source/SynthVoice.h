@@ -337,7 +337,7 @@ public:
         for(int i = 0 ; i < numPartialsVar; i++){
 			for (int j = 0; j < numUnisonVar; j++) {
 
-				ModalUnit* unit = new ModalUnit(i + 1, j - 1);
+				ModalUnit* unit = new ModalUnit(i + 1, j);
 				unit->setSampleRate(mSampleRate);
 
 				mModalUnits.add(unit);
