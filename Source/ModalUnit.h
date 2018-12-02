@@ -21,9 +21,10 @@
 class ModalUnit
 {
 public:
-	ModalUnit(int inPartialNumber)
+	ModalUnit(int inPartialNumber, int inUnisonNumber)
     :   mPhase(0),
-        mPartialNumber(inPartialNumber)
+        mPartialNumber(inPartialNumber),
+		mUnisonNumber(inUnisonNumber)
 	{
 	}
     
@@ -35,8 +36,8 @@ public:
 		simpleSin.setSampleRate(mSampleRate);
 		aDSR.setSampleRate(eventSampleRate); //(eventSampleRate);
     }
-
-	void setFrequency(double frequencyIn) {	frequency = frequencyIn*mPartialNumber;	}
+	void setDeTuneUnisonHz(double deTuneHzIn) { deTuneUnisonHz = deTuneHzIn; }
+	void setFrequency(double frequencyIn) {	frequency = frequencyIn*mPartialNumber + (mUnisonNumber*deTuneUnisonHz);	}
 	void setFrequencyDelayed(double frequencyIn) { frequencyDelayed = frequencyIn * mPartialNumber; }
 	void setEventSampleRate(double eventSampleRateIn) { eventSampleRate = eventSampleRateIn; aDSR.setSampleRate(eventSampleRate);
 	}
@@ -120,8 +121,10 @@ private:
 	double releaseSeconds = 0.0;
 	EnvelopeGenerator::EnvelopeStage envelopeStage = EnvelopeGenerator::ENVELOPE_STAGE_ATTACK;
 
+	double deTuneUnisonHz = 0;
     double mPhase = 0;
     int mPartialNumber = 1;
+	int mUnisonNumber = 0;
     double mSampleRate = 44100;
 	double mNyquistFreq = 22050;
 	double frequency = 330;

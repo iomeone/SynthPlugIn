@@ -23,6 +23,8 @@
 
 #include "UsedParameters.h"
 
+static const int numUnison = 1;
+
 class SynthVoice : public SynthesiserVoice
 {
 public:
@@ -120,16 +122,16 @@ public:
 
 		//UPDATE MODALUNIT ON START NOTE
 		for (int i = 0; i < mModalUnits.size(); i++) {
-			ModalUnit* unit = mModalUnits.getUnchecked(i);
-			unit->setVelocity(velocity);
-			unit->setPreAttackSeconds(envPreAttackTime);
-			unit->setPreAttackDecaySeconds(envPreAttackDecayTime);
-			unit->setAttackSeconds(envAttackTime);
-			unit->setDecaySeconds(envDecayTime);
-			unit->setSustainPercent(envSustainLevel);
-			unit->setReleaseSeconds(envReleaseTime);
-			unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
-		}
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setVelocity(velocity);
+				unit->setPreAttackSeconds(envPreAttackTime);
+				unit->setPreAttackDecaySeconds(envPreAttackDecayTime);
+				unit->setAttackSeconds(envAttackTime);
+				unit->setDecaySeconds(envDecayTime);
+				unit->setSustainPercent(envSustainLevel);
+				unit->setReleaseSeconds(envReleaseTime);
+				unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
+			}
 
 		velocityScaled = velocity;
         newFrequency = MidiMessage::getMidiNoteInHertz(midiNoteNumber);
@@ -204,10 +206,11 @@ public:
 		
 		//UPDATE MODALUNIT PER BLOCK
 		for (int i = 0; i < mModalUnits.size(); i++) {
-			ModalUnit* unit = mModalUnits.getUnchecked(i);
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
 				unit->setSampleRate(mSampleRate);
 				unit->setEventSampleRate(eventSampleRate);
 				unit->setSamplesPerIncrement(samplesPerIncrementVar);
+				unit->setDeTuneUnisonHz(deTuneUnisonHzVar);
 		}
 
 		/** render our audio */
@@ -223,15 +226,18 @@ public:
 
 			//UPDATE MODALUNIT PER SAMPLE
 			for (int i = 0; i < mModalUnits.size(); i++) {
-				ModalUnit* unit = mModalUnits.getUnchecked(i);
+
+					ModalUnit* unit = mModalUnits.getUnchecked(i);
 					unit->setFrequency(frequency);
 					unit->setFrequencyDelayed(frequencyDelayed);
-			}
+				}
 			
 			//OUTPUT HERE
-			for (int channel = 0; channel < 1 /*outputBuffer.getNumChannels()*/; ++channel)
+			finalOutput = delayOutput()*oscillatorGainSmoothed;
+
+			for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
 			{
-                outputBuffer.addSample(channel, startSample, delayOutput()*oscillatorGainSmoothed); ///////MAIN OUTPUT HERE
+                outputBuffer.addSample(channel, startSample, finalOutput); ///////MAIN OUTPUT HERE
 			}
 			++startSample;
 		}
@@ -269,7 +275,16 @@ public:
 			numPartialsVar = *numPartialsPtr;
 			constructModalUnits();
 			}
-	
+
+		float* numUnisonPtr = parametersPointer->getRawParameterValue(id_NumUnison);
+			if (numUnisonVar != *numUnisonPtr) {
+				numUnisonVar = *numUnisonPtr;
+				constructModalUnits();
+			}
+
+		float* deTuneUnisonHzPtr = parametersPointer->getRawParameterValue(id_DeTuneUnisonHz);
+		deTuneUnisonHzVar = *deTuneUnisonHzPtr;
+
 		float* numVoicesPtr = parametersPointer->getRawParameterValue(id_NumVoices); //WHAT TO DO?
 
 		float* samplesPerIncrementPtr = parametersPointer->getRawParameterValue(id_SamplesPerIncrement); 
@@ -317,14 +332,16 @@ public:
     {
         mModalUnits.clear();
         
-        outputScalar = 1.0/numPartialsVar;
+        outputScalar = 1.0/(numPartialsVar*numUnisonVar);
         
         for(int i = 0 ; i < numPartialsVar; i++){
-            
-            ModalUnit* unit = new ModalUnit(i+1);
-            unit->setSampleRate(mSampleRate);
-            
-            mModalUnits.add(unit);
+			for (int j = 0; j < numUnisonVar; j++) {
+
+				ModalUnit* unit = new ModalUnit(i + 1, j - 1);
+				unit->setSampleRate(mSampleRate);
+
+				mModalUnits.add(unit);
+			}
         }
     }
 
@@ -360,6 +377,9 @@ private:
 	EnvelopeGenerator aDSR;
 	EnvelopeGenerator envImpulse;
 
+	double finalOutput = 0.0;
+	double deTuneUnisonHzVar = 500;
+	int numUnisonVar = 1;
 	float envAttackTime = 0.001f; //is this correct/necessary?
 	float envDecayTime = 0.2f;
 	float envSustainLevel = 0.0f;

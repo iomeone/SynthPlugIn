@@ -33,6 +33,18 @@ void AudioPlugInAudioProcessorEditor::createNumPartialsGroup()
 	numPartialsSlider->setSkewFactorFromMidPoint(40.0f);
 	numPartialsGroupSliders.add(numPartialsSlider);
 
+	LabeledComponent* numUnisonSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_NumUnison);
+	numUnisonSlider->setInterval(1.0f);
+	numUnisonSlider->setNumDecimalPlacesToDisplay(0);
+	//numPartialsSlider->setSkewFactorFromMidPoint(40.0f);
+	numPartialsGroupSliders.add(numUnisonSlider);
+
+	LabeledComponent* deTuneUnisonHzSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_DeTuneUnisonHz);
+	deTuneUnisonHzSlider->setInterval(0.1f);
+	deTuneUnisonHzSlider->setNumDecimalPlacesToDisplay(2);
+	//deTuneUnisonHzSlider->setSkewFactorFromMidPoint(40.0f);
+	numPartialsGroupSliders.add(deTuneUnisonHzSlider);
+
 	LabeledComponent* samplesPerIncrementSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_SamplesPerIncrement);
 	samplesPerIncrementSlider->setInterval(1);
 	samplesPerIncrementSlider->setNumDecimalPlacesToDisplay(0);
