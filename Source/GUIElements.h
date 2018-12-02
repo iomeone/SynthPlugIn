@@ -100,7 +100,7 @@ void AudioPlugInAudioProcessorEditor::createEnvelopeGroup()
 	LabeledComponent* envSustainSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvSustain);
 	envSustainSlider->setInterval(0.001);
 	envSustainSlider->setNumDecimalPlacesToDisplay(3);
-	envSustainSlider->setSkewFactorFromMidPoint(0.01);
+	envSustainSlider->setSkewFactorFromMidPoint(0.4);
 	envelopeGroupSliders.add(envSustainSlider);
 
 	//RELEASE SLIDER

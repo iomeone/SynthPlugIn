@@ -33,13 +33,14 @@ public:
 		mNyquistFreq = (mSampleRate / 2) - 2000;
         testOsc.setSampleRate(mSampleRate);
 		simpleSin.setSampleRate(mSampleRate);
-		aDSR.setSampleRate(mSampleRate); //(eventSampleRate);
+		aDSR.setSampleRate(eventSampleRate); //(eventSampleRate);
     }
 
 	void setFrequency(double frequencyIn) {	frequency = frequencyIn*mPartialNumber;	}
 	void setFrequencyDelayed(double frequencyIn) { frequencyDelayed = frequencyIn * mPartialNumber; }
-	void setEventSampleRate(double eventSampleRateIn) { eventSampleRate = eventSampleRateIn; }
-	void setSamplesPerIncrement(double samplesPerIncrementIn) { samplesPerIncrement = samplesPerIncrementIn; eventSampleRate = mSampleRate / samplesPerIncrement; }
+	void setEventSampleRate(double eventSampleRateIn) { eventSampleRate = eventSampleRateIn; aDSR.setSampleRate(eventSampleRate);
+	}
+	void setSamplesPerIncrement(double samplesPerIncrementIn) { samplesPerIncrement = samplesPerIncrementIn; }
 
 	void setVelocity(double velocityIn) { velocity = velocityIn; aDSR.setVelocityValue(velocity); }
 
@@ -63,23 +64,27 @@ public:
 		else
 		{
 			sinOutput = testOsc.sinebuf(frequencyDelayed); // allows ~88 oscillators on laptop core
-			//output = testOsc.sinebuf4(frequency); // allows ~71 oscillators on laptop core
-			//output = simpleSin.sinewave(frequency); // allows ~60 oscillators on laptop core
+			//sinOutput = testOsc.sinebuf4(frequencyDelayed); // allows ~71 oscillators on laptop core
+			//sinOutput = simpleSin.sinewave(frequencyDelayed); // allows ~60 oscillators on laptop core
 		}
 			
 		return sinOutput;
     }
 
+	void setADSRSampleRate()
+	{
+		
+	}
+
 	double getADSROutput()
 	{
 		//TECHNIQUE FOR REDUCING THE OUTPUT OF THE ADSR TO ONCE EVERY 10 SAMPLES (but need to change envelope internally to add 10 per sample to compensate)
-		//aDSR.setSampleRate(eventSampleRate);
-		adsrValue = aDSR.nextSample();
-		//DBG(" adsrValue = " << adsrValue);
-		return adsrValue;
+		//
+		//adsrValue = aDSR.nextSample();
+		//return adsrValue;
 
 		//DBG("eventSampleRate = " << eventSampleRate << " sampleRate = " << mSampleRate << " samplesPerIncrement = " << samplesPerIncrement);
-		/*
+		
 		if (adsrCounter >= samplesPerIncrement) {
 			adsrValue = aDSR.nextSample();
 			adsrCounter = 1;
@@ -87,12 +92,12 @@ public:
 		else {
 			adsrCounter++;
 		}
-		return adsrValue;*/
+		return adsrValue;
 	}
     
 	double getOutput()
 	{
-		output = getSinOutput(); // *getADSROutput();
+		output = getSinOutput() * getADSROutput();
 		return output;
 	}
 

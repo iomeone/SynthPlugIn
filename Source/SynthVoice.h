@@ -17,6 +17,8 @@
 #include "MaxiDelay.h"
 #include "SVFDspUtilities.h"
 #include "SVFStateVariableFilter.h"
+#include "LadderFilter.h"
+#include "NoiseGenerator.h"
 #include "ModalUnit.h"
 
 #include "UsedParameters.h"
@@ -91,7 +93,7 @@ public:
 	double delayOutput()
 	{
 		if (delayOnOffVar = true) {
-			return delayLine.delay(modalOutput()*aDSROutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
+			return delayLine.delay(modalOutput(), delayTimeVar, delayFeedbackVar, delayPrePostMixVar, delayDWMixVar);
 		}
 		else {
 			return modalOutput();

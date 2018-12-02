@@ -12,6 +12,11 @@
             file="Source/LabeledComponent.cpp"/>
       <FILE id="qL9qFj" name="LabeledComponent.h" compile="0" resource="0"
             file="Source/LabeledComponent.h"/>
+      <FILE id="uZbEpT" name="LadderFilter.h" compile="0" resource="0" file="Source/LadderFilter.h"/>
+      <FILE id="jc2918" name="LadderFilterUtil.h" compile="0" resource="0"
+            file="Source/LadderFilterUtil.h"/>
+      <FILE id="GL6l1r" name="NoiseGenerator.h" compile="0" resource="0"
+            file="Source/NoiseGenerator.h"/>
       <FILE id="hyqiUU" name="ModalUnit.h" compile="0" resource="0" file="Source/ModalUnit.h"/>
       <FILE id="Pg4BXN" name="MaxiDelay.cpp" compile="1" resource="0" file="Source/MaxiDelay.cpp"/>
       <FILE id="fDDRRc" name="MaxiDelay.h" compile="0" resource="0" file="Source/MaxiDelay.h"/>
