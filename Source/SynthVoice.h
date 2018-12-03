@@ -31,23 +31,43 @@ public:
 	SynthVoice(AudioProcessorValueTreeState* parameters)
 		: parametersPointer(parameters)
 	{
-        parametersPointer->addParameterListener(id_SynthGain, this);
+        //LISTENERS - NEEDED FOR ANYTHING TRIGGERING A FUNCTION
+
+			//otherwise use getRawParameterValue directly
+
+		parametersPointer->addParameterListener(id_SynthGain, this);
         parametersPointer->addParameterListener(id_NumPartials, this);
         parametersPointer->addParameterListener(id_NumUnison, this);
         parametersPointer->addParameterListener(id_DeTuneUnisonHz, this);
         parametersPointer->addParameterListener(id_SamplesPerIncrement, this);
-        
+
+		parametersPointer->addParameterListener(id_EnvPreAttack, this);
+		parametersPointer->addParameterListener(id_EnvPreAttackDecay, this);
+		parametersPointer->addParameterListener(id_EnvAttack, this);
+		parametersPointer->addParameterListener(id_EnvDecay, this);
+		parametersPointer->addParameterListener(id_EnvSustain, this);
+		parametersPointer->addParameterListener(id_EnvRelease, this);
+
         constructModalUnits();
 	}
     
     ~SynthVoice()
     {
+		//MUST DESTROY ALL LISTENERS
+
         parametersPointer->removeParameterListener(id_SynthGain, this);
         parametersPointer->removeParameterListener(id_NumPartials, this);
         parametersPointer->removeParameterListener(id_NumUnison, this);
         parametersPointer->removeParameterListener(id_DeTuneUnisonHz, this);
         parametersPointer->removeParameterListener(id_SamplesPerIncrement, this);
-    }
+
+		parametersPointer->removeParameterListener(id_EnvPreAttack, this);
+		parametersPointer->removeParameterListener(id_EnvPreAttackDecay, this);
+		parametersPointer->removeParameterListener(id_EnvAttack, this);
+		parametersPointer->removeParameterListener(id_EnvDecay, this);
+		parametersPointer->removeParameterListener(id_EnvSustain, this);
+		parametersPointer->removeParameterListener(id_EnvRelease, this);
+	}
 
     bool canPlaySound (SynthesiserSound* sound) override
     {
@@ -91,8 +111,7 @@ public:
 	double delayOutput()
 	{
         
-        auto delayOnOff =
-        *parametersPointer->getRawParameterValue(id_DelOnOff);
+        auto delayOnOff = *parametersPointer->getRawParameterValue(id_DelOnOff);
         
         if ((bool)delayOnOff) {
 			return delayLine.delay(modalOutput(),
@@ -126,13 +145,7 @@ public:
 		for (int i = 0; i < mModalUnits.size(); i++) {
             ModalUnit* unit = mModalUnits.getUnchecked(i);
             unit->setVelocity(velocity);
-            unit->setPreAttackSeconds(*parametersPointer->getRawParameterValue(id_EnvPreAttack));
-            unit->setPreAttackDecaySeconds(*parametersPointer->getRawParameterValue(id_EnvPreAttackDecay));
-            unit->setAttackSeconds(*parametersPointer->getRawParameterValue(id_EnvAttack));
-            unit->setDecaySeconds(*parametersPointer->getRawParameterValue(id_EnvDecay));
-            unit->setSustainPercent(*parametersPointer->getRawParameterValue(id_EnvSustain));
-            unit->setReleaseSeconds(*parametersPointer->getRawParameterValue(id_EnvRelease));
-            unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
+			unit->setEnterStage(EnvelopeGenerator::ENVELOPE_STAGE_PREATTACK);
         }
 
 		velocityScaled = velocity;
@@ -204,6 +217,7 @@ public:
                     ModalUnit* unit = mModalUnits.getUnchecked(i);
                     unit->setFrequency(frequency);
                     unit->setFrequencyDelayed(frequencyDelayed);
+
                 }
 
             //OUTPUT HERE
@@ -232,6 +246,7 @@ public:
         
         outputScalar = 1.0/float(numPartials*numUnison);
         
+		//UPDATE MODAL UNITS ON CONSTRUCTION
         for(int i = 0 ; i < numPartials; i++){
 			for (int j = 0; j < numUnison; j++) {
  
@@ -239,8 +254,16 @@ public:
 				
                 unit->setSampleRate(mSampleRate);
                 unit->setEventSampleRate(eventSampleRate);
-                unit->setSamplesPerIncrement(samplesPerIncrementVar);
+                unit->setSamplesPerIncrement(samplesPerIncrement);
                 unit->setDeTuneUnisonHz(*parametersPointer->getRawParameterValue(id_DeTuneUnisonHz));
+				
+				unit->setPreAttackSeconds(*parametersPointer->getRawParameterValue(id_EnvPreAttack));
+				unit->setPreAttackDecaySeconds(*parametersPointer->getRawParameterValue(id_EnvPreAttackDecay));
+				unit->setAttackSeconds(*parametersPointer->getRawParameterValue(id_EnvAttack));
+				unit->setDecaySeconds(*parametersPointer->getRawParameterValue(id_EnvDecay));
+				unit->setSustainPercent(*parametersPointer->getRawParameterValue(id_EnvSustain));
+				unit->setReleaseSeconds(*parametersPointer->getRawParameterValue(id_EnvRelease));
+
 				mModalUnits.add(unit);
 			}
         }
@@ -248,33 +271,68 @@ public:
     
     void parameterChanged (const String& parameterID, float newValue) override
     {
+		//WHAT TO DO IF KNOBS ARE MOVED
+
         if((parameterID == id_NumPartials) ||
            (parameterID == id_NumUnison)){
-            
             constructModalUnits();
         }
     
         if(parameterID == id_DeTuneUnisonHz){
-            
             for (int i = 0; i < mModalUnits.size(); i++) {
-                
                 ModalUnit* unit = mModalUnits.getUnchecked(i);
                 unit->setDeTuneUnisonHz(newValue);
             }
         }
         
         if(parameterID == id_SamplesPerIncrement){
-            
-            samplesPerIncrementVar = newValue;
-            eventSampleRate = mSampleRate / samplesPerIncrementVar;
-            
+            samplesPerIncrement = newValue;
+            eventSampleRate = mSampleRate / samplesPerIncrement;
             for (int i = 0; i < mModalUnits.size(); i++) {
-                
                 ModalUnit* unit = mModalUnits.getUnchecked(i);
                 unit->setEventSampleRate(eventSampleRate);
-                unit->setSamplesPerIncrement(samplesPerIncrementVar);
+                unit->setSamplesPerIncrement(samplesPerIncrement);
             }
         }
+
+		if (parameterID == id_EnvPreAttack) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setPreAttackSeconds(newValue);
+			}
+		}
+		if (parameterID == id_EnvPreAttackDecay) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setPreAttackDecaySeconds(newValue);
+			}
+		}
+		if (parameterID == id_EnvAttack) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setAttackSeconds(newValue);
+			}
+		}
+		if (parameterID == id_EnvDecay) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setDecaySeconds(newValue);
+			}
+		}
+		if (parameterID == id_EnvSustain) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setSustainPercent(newValue);
+			}
+		}
+		if (parameterID == id_EnvRelease) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setReleaseSeconds(newValue);
+			}
+		}
+
+
     }
 
     //=======================================================
@@ -291,7 +349,7 @@ private:
 	double output = 0.0;
     double mSampleRate = 44100.0f;
 	double eventSampleRate = 44100.0f;
-	double samplesPerIncrementVar = 1.0f;
+	double samplesPerIncrement = 1.0f;
 
 	MaxiDelayline pitchDelay;
 	double frequencyDelayed = 400;

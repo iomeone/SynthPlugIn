@@ -198,7 +198,8 @@ void AudioPlugInAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBu
 	
 	buffer.clear();
 	mySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-	
+	//add FX section here eg. myFX
+
 }
 
 //==============================================================================
