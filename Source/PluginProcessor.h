@@ -17,7 +17,9 @@
 //==============================================================================
 /**
 */
-class AudioPlugInAudioProcessor  : public AudioProcessor
+class AudioPlugInAudioProcessor
+:   public AudioProcessor,
+    public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -56,12 +58,19 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    void parameterChanged (const String& parameterID, float newValue) override;
 
 	// Our parameters
 	AudioProcessorValueTreeState parameters;
 
 private:
     //==============================================================================
+    
+    CriticalSection lock;
+    
+    /** internal */
+    void updateNumVoices();
 
 	Array<SynthVoice*> mVoices;
 	Synthesiser mySynth;

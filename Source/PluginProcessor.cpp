@@ -29,11 +29,11 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
         /** declare our parameters */
         std::make_unique<AudioParameterFloat> (id_SynthGain, "Gain", NormalisableRange<float>(0.0f, 2.0f), 1.0f),
 		
-		std::make_unique<AudioParameterInt> (id_NumVoices, "# Voices", 1, 12, 3),
-		std::make_unique<AudioParameterInt> (id_NumPartials, "# Partials", 1, 200, 8),
+		std::make_unique<AudioParameterInt> (id_NumVoices, "# Voices", 1, 12, 6),
+		std::make_unique<AudioParameterInt> (id_NumPartials, "# Partials", 1, 200, 50),
 		std::make_unique<AudioParameterInt>(id_NumUnison, "# Unison", 1, 3, 1),
-		std::make_unique<AudioParameterFloat>(id_DeTuneUnisonHz, "Detune Hz", NormalisableRange<float>(0.0f, 500.0f), 200.0f),
-		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 900, 1),
+		std::make_unique<AudioParameterFloat>(id_DeTuneUnisonHz, "Detune Hz", NormalisableRange<float>(0.0f, 500.0f), 1.0f),
+		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 160, 12),
 
 		std::make_unique<AudioParameterFloat> (id_EnvPreAttack, "Pre-Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
 		std::make_unique<AudioParameterFloat> (id_EnvPreAttackDecay, "Pre-Decay", NormalisableRange<float>(0.001f, 2.0f), 0.1f),
@@ -50,26 +50,14 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
     })
 #endif
 {
-	mySynth.clearVoices();
+    updateNumVoices();
 
-	for (int i = 0; i < numVoices; i++)
-	{
-		// new voice
-		SynthVoice* voice = new SynthVoice(&parameters);
-
-		// add voice to synth
-		mySynth.addVoice(voice);
-
-		// track voices in array
-		mVoices.add(voice);
-	}
-	mySynth.clearSounds();
-	mySynth.addSound(new SynthSound());
-
+    parameters.addParameterListener(id_NumVoices, this);
 }
 
 AudioPlugInAudioProcessor::~AudioPlugInAudioProcessor()
 {
+    parameters.removeParameterListener(id_NumVoices, this);
 }
 
 //==============================================================================
@@ -236,6 +224,37 @@ void AudioPlugInAudioProcessor::setStateInformation (const void* data, int sizeI
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+void AudioPlugInAudioProcessor::parameterChanged (const String& parameterID, float newValue)
+{
+    if(parameterID == id_NumVoices){
+        
+        updateNumVoices();
+    }
+}
+
+void AudioPlugInAudioProcessor::updateNumVoices()
+{
+    const ScopedLock voiceLock (lock);
+    
+    auto voices = parameters.getRawParameterValue(id_NumVoices);
+    
+    mySynth.clearVoices();
+    
+    for (int i = 0; i < *voices; i++)
+    {
+        // new voice
+        SynthVoice* voice = new SynthVoice(&parameters);
+        
+        // add voice to synth
+        mySynth.addVoice(voice);
+        
+        // track voices in array
+        mVoices.add(voice);
+    }
+    mySynth.clearSounds();
+    mySynth.addSound(new SynthSound());
 }
 
 //==============================================================================

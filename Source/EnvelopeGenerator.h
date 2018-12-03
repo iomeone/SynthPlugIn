@@ -34,7 +34,7 @@ public:
 	inline double getPreAttackSampleLength() const {return preAttackSampleLength;};
 	inline double getSampleRate() const { return sampleRate; };
 
-		void setSampleRate(double newSampleRate)		{ sampleRate = newSampleRate; }
+	void setSampleRate(double newSampleRate) { sampleRate = newSampleRate; deltaTime = 1 / sampleRate; }
 		void setVelocityValue(float inVelocityValue)	{ velocityValue = inVelocityValue; }
 		
 		void setPreAttackSeconds(float inPreAttackSeconds) { 
@@ -68,6 +68,7 @@ public:
 	private:
 		EnvelopeStage currentStage;
 		//int samplesPerIncrement = 1;
+		double deltaTime = 0;
 		double velocityValue; // 0.0f - 1.0f
 		double currentLevel;
 		double stageInitLevel;

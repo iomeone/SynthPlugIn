@@ -39,7 +39,21 @@ LabeledComponent::LabeledComponent(LabeledComponentStyle inStyle,
 
 LabeledComponent::~LabeledComponent()
 {
-	mSlider->setLookAndFeel(nullptr);
+    switch(mStyle)
+    {
+        case(kLabeledComponentStyle_Button):{
+            mButton->setLookAndFeel(nullptr);
+        } break;
+            
+        case(kLabeledComponentStyle_Slider):{
+            mSlider->setLookAndFeel(nullptr);
+        } break;
+            
+        case(kLabeledComponentStyle_ComboBox):{
+            mComboBox->setLookAndFeel(nullptr);
+        } break;
+    }
+
 	setLookAndFeel(nullptr);
 }
 

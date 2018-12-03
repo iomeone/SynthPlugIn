@@ -38,7 +38,7 @@ public:
     }
 	void setDeTuneUnisonHz(double deTuneHzIn) { deTuneUnisonHz = deTuneHzIn; }
 	void setFrequency(double frequencyIn) {	frequency = frequencyIn*mPartialNumber + (mUnisonNumber*deTuneUnisonHz);	}
-	void setFrequencyDelayed(double frequencyIn) { frequencyDelayed = frequencyIn * mPartialNumber; }
+	void setFrequencyDelayed(double frequencyIn) { frequencyDelayed = frequencyIn*mPartialNumber + (mUnisonNumber*deTuneUnisonHz); }
 	void setEventSampleRate(double eventSampleRateIn) { eventSampleRate = eventSampleRateIn; aDSR.setSampleRate(eventSampleRate);
 	}
 	void setSamplesPerIncrement(double samplesPerIncrementIn) { samplesPerIncrement = samplesPerIncrementIn; }
@@ -64,7 +64,8 @@ public:
 
 		else
 		{
-			sinOutput = testOsc.sinebuf(frequencyDelayed); // allows ~88 oscillators on laptop core
+			sinOutput = testOsc.sine512noint(frequencyDelayed); // allows ~ oscillators on laptop core
+			//sinOutput = testOsc.sinebuf(frequencyDelayed); // allows ~88 oscillators on laptop core
 			//sinOutput = testOsc.sinebuf4(frequencyDelayed); // allows ~71 oscillators on laptop core
 			//sinOutput = simpleSin.sinewave(frequencyDelayed); // allows ~60 oscillators on laptop core
 		}
