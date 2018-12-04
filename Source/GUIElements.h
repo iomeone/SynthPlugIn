@@ -101,6 +101,13 @@ void AudioPlugInAudioProcessorEditor::createEnvelopeGroup()
 	//envAttackSlider->setSkewFactorFromMidPoint(0.01); 
 	envelopeGroupSliders.add(envAttackSlider);
 
+	//ATTACK OVERSHOOT
+	LabeledComponent* envAttackOvershootSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvAttackOvershoot);
+	envAttackOvershootSlider->setInterval(0.001);
+	envAttackOvershootSlider->setNumDecimalPlacesToDisplay(3);
+	//envAttackOvershootSlider->setSkewFactorFromMidPoint(0.01); 
+	envelopeGroupSliders.add(envAttackOvershootSlider);
+
 	//DECAY SLIDER
 	LabeledComponent* envDecaySlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvDecay);
 	envDecaySlider->setInterval(0.001);

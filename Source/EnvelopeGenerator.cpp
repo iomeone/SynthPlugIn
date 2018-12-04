@@ -12,19 +12,17 @@ double EnvelopeGenerator::nextSample() {
     
 	if (currentStage == ENVELOPE_STAGE_PREATTACK) {
 		
-		currentLevel = stageInitLevel / pow((currentSampleIndex*deltaTime) + 1.0, preAttackExponent);
-		currentSampleIndex++;
+		currentLevel = stageInitLevel * exp(log(currentDeltaIndex) * negativePreAttackExponent);
+		currentDeltaIndex = currentDeltaIndex + deltaTime;
 
-		//DBG(currentStage << "sample index = " << currentSampleIndex << " level = " << currentLevel << " sampleRate = " << sampleRate);
-
-		if (currentSampleIndex >= preAttackSampleLength) {
+		if (currentDeltaIndex >= preAttackTimeSecondsPlusOne) {
 			enterStage(ENVELOPE_STAGE_ATTACK);
 		}
 	}
 	else if (currentStage == ENVELOPE_STAGE_ATTACK) {
 	
-		currentLevel = stageInitLevel + (1 - exp(attackXMultiplier*(currentSampleIndex*deltaTime)))*attackOvershoot;
-		currentSampleIndex++;
+		currentLevel = stageInitLevel + (1 - exp(attackXMultiplier*currentDeltaIndex))*attackOvershoot*velocityValue;
+		currentDeltaIndex = currentDeltaIndex + deltaTime;
 
 		if (currentLevel >= maxLevel) {
 			enterStage(ENVELOPE_STAGE_DECAY);
@@ -33,10 +31,10 @@ double EnvelopeGenerator::nextSample() {
 
 	else if (currentStage == ENVELOPE_STAGE_DECAY) {
 		
-		currentLevel = maxLevel / pow((currentSampleIndex*deltaTime)+1.0, decayExponent);
-		currentSampleIndex++;
+		currentLevel = maxLevel * exp(log(currentDeltaIndex) * negativeDecayExponent);
+		currentDeltaIndex = currentDeltaIndex + deltaTime;
 		
-		if (currentLevel <= (sustainLevel + 0.000001)) {
+		if (currentLevel <= (sustainLevelPlusIncrement)) {
 			currentLevel = sustainLevel;
 			enterStage(ENVELOPE_STAGE_SUSTAIN);
 		}	
@@ -51,9 +49,9 @@ double EnvelopeGenerator::nextSample() {
 
 	else if (currentStage == ENVELOPE_STAGE_RELEASE) {
 			
-		currentLevel = stageInitLevel / pow((currentSampleIndex*deltaTime)+1.0, releaseExponent);
-		currentSampleIndex++;
-
+		currentLevel = stageInitLevel * exp(log(currentDeltaIndex) * negativeReleaseExponent);
+		currentDeltaIndex = currentDeltaIndex + deltaTime;
+		
 		if (currentLevel <= 0.0000001) {
 			currentLevel = 0.0; 
 			enterStage(ENVELOPE_STAGE_OFF);
@@ -61,15 +59,12 @@ double EnvelopeGenerator::nextSample() {
 	}
 	else {}
 	
-	//DBG(currentStage << " sample index = " << currentSampleIndex << " level = " << currentLevel << " sampleRate = " << sampleRate);
-	//DBG("sample index = " << currentSampleIndex << " level = " << currentLevel << " preAttackTimeSeconds = " << preAttackTimeSeconds);
-
     return currentLevel;
 }
 
 
 void EnvelopeGenerator::enterStage(EnvelopeStage newStage) {
-   currentSampleIndex = 0;
+   currentSampleIndex = 0; 
    currentStage = newStage;
 
     switch (newStage) {
@@ -79,20 +74,21 @@ void EnvelopeGenerator::enterStage(EnvelopeStage newStage) {
             break;
 
 		case ENVELOPE_STAGE_PREATTACK:
+			currentDeltaIndex = 1.0f;
 			stageInitLevel = currentLevel;
-			preAttackSampleLength = preAttackTimeSeconds * sampleRate ; 
-			preAttackExponent = 1 / log(preAttackDecayTimeSeconds + 1);
 			break;
 
 		case ENVELOPE_STAGE_ATTACK: 
+			currentDeltaIndex = 0.0f;
 			stageInitLevel = currentLevel;
-			maxLevel = jmin(1.0, stageInitLevel + velocityValue);
-			attackXMultiplier = (log(1 - (1 / attackOvershoot))) / attackTimeSeconds;
-            break;
+			maxLevel = jmin(1.0f, stageInitLevel + velocityValue);
+			attackXMultiplier = (log(1 - (1 / attackOvershoot))) / (attackTimeSeconds*velocityValue);
+			break;
 
         case ENVELOPE_STAGE_DECAY:
+			currentDeltaIndex = 1.0f;
 			sustainLevel = sustainPercent * maxLevel;
-			decayExponent = 1 / log(decayTimeSeconds+1);
+			sustainLevelPlusIncrement = sustainLevel + 0.000001;
 			break;
 
         case ENVELOPE_STAGE_SUSTAIN:
@@ -100,8 +96,8 @@ void EnvelopeGenerator::enterStage(EnvelopeStage newStage) {
             break;
 
         case ENVELOPE_STAGE_RELEASE:
+			currentDeltaIndex = 1.0f;
 			stageInitLevel = currentLevel;
-			releaseExponent =  1 / log(releaseTimeSeconds + 1); 
 			break;
 
         default:

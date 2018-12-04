@@ -44,6 +44,7 @@ public:
 		parametersPointer->addParameterListener(id_EnvPreAttack, this);
 		parametersPointer->addParameterListener(id_EnvPreAttackDecay, this);
 		parametersPointer->addParameterListener(id_EnvAttack, this);
+		parametersPointer->addParameterListener(id_EnvAttackOvershoot, this);
 		parametersPointer->addParameterListener(id_EnvDecay, this);
 		parametersPointer->addParameterListener(id_EnvSustain, this);
 		parametersPointer->addParameterListener(id_EnvRelease, this);
@@ -64,6 +65,7 @@ public:
 		parametersPointer->removeParameterListener(id_EnvPreAttack, this);
 		parametersPointer->removeParameterListener(id_EnvPreAttackDecay, this);
 		parametersPointer->removeParameterListener(id_EnvAttack, this);
+		parametersPointer->removeParameterListener(id_EnvAttackOvershoot, this);
 		parametersPointer->removeParameterListener(id_EnvDecay, this);
 		parametersPointer->removeParameterListener(id_EnvSustain, this);
 		parametersPointer->removeParameterListener(id_EnvRelease, this);
@@ -221,7 +223,7 @@ public:
                 }
 
             //OUTPUT HERE
-            finalOutput = modalOutput()*oscillatorGainSmoothed;
+            finalOutput = delayOutput()*oscillatorGainSmoothed;
 
             for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
             {
@@ -244,6 +246,9 @@ public:
         
         mModalUnits.clear();
         
+		samplesPerIncrement = *parametersPointer->getRawParameterValue(id_SamplesPerIncrement);
+		eventSampleRate = mSampleRate / samplesPerIncrement;
+		
         outputScalar = 1.0/float(numPartials*numUnison);
         
 		//UPDATE MODAL UNITS ON CONSTRUCTION
@@ -260,6 +265,7 @@ public:
 				unit->setPreAttackSeconds(*parametersPointer->getRawParameterValue(id_EnvPreAttack));
 				unit->setPreAttackDecaySeconds(*parametersPointer->getRawParameterValue(id_EnvPreAttackDecay));
 				unit->setAttackSeconds(*parametersPointer->getRawParameterValue(id_EnvAttack));
+				unit->setAttackOvershoot(*parametersPointer->getRawParameterValue(id_EnvAttackOvershoot));
 				unit->setDecaySeconds(*parametersPointer->getRawParameterValue(id_EnvDecay));
 				unit->setSustainPercent(*parametersPointer->getRawParameterValue(id_EnvSustain));
 				unit->setReleaseSeconds(*parametersPointer->getRawParameterValue(id_EnvRelease));
@@ -311,6 +317,12 @@ public:
 			for (int i = 0; i < mModalUnits.size(); i++) {
 				ModalUnit* unit = mModalUnits.getUnchecked(i);
 				unit->setAttackSeconds(newValue);
+			}
+		}
+		if (parameterID == id_EnvAttackOvershoot) {
+			for (int i = 0; i < mModalUnits.size(); i++) {
+				ModalUnit* unit = mModalUnits.getUnchecked(i);
+				unit->setAttackOvershoot(newValue);
 			}
 		}
 		if (parameterID == id_EnvDecay) {

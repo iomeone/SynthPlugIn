@@ -33,12 +33,13 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
 		std::make_unique<AudioParameterInt> (id_NumPartials, "# Partials", 1, 200, 50),
 		std::make_unique<AudioParameterInt>(id_NumUnison, "# Unison", 1, 3, 1),
 		std::make_unique<AudioParameterFloat>(id_DeTuneUnisonHz, "Detune Hz", NormalisableRange<float>(0.0f, 500.0f), 1.0f),
-		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 160, 12),
+		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 160, 24),
 
 		std::make_unique<AudioParameterFloat> (id_EnvPreAttack, "Pre-Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
 		std::make_unique<AudioParameterFloat> (id_EnvPreAttackDecay, "Pre-Decay", NormalisableRange<float>(0.001f, 2.0f), 0.1f),
-        std::make_unique<AudioParameterFloat> (id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.015f),
-        std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 2.0f),
+		std::make_unique<AudioParameterFloat>(id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.050f),
+		std::make_unique<AudioParameterFloat>(id_EnvAttackOvershoot, "Overshoot", NormalisableRange<float>(1.0f, 2.0f), 1.0f),
+		std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 0.3f),
         std::make_unique<AudioParameterFloat> (id_EnvSustain, "Sustain", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_EnvRelease, "Release", NormalisableRange<float>(0.001f, 4.0f), 0.02f),
         

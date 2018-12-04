@@ -48,6 +48,7 @@ public:
 	void setPreAttackSeconds(double envPreAttackTimeIn) { preAttackSeconds = envPreAttackTimeIn; aDSR.setPreAttackSeconds(preAttackSeconds); }
 	void setPreAttackDecaySeconds(double envPreAttackDecayTimeIn) { preAttackDecaySeconds = envPreAttackDecayTimeIn; aDSR.setPreAttackDecaySeconds(preAttackDecaySeconds); }
 	void setAttackSeconds(double envAttackTimeIn) { attackSeconds = envAttackTimeIn; aDSR.setAttackSeconds(attackSeconds); }
+	void setAttackOvershoot(double envAttackOvershootIn) { aDSR.setAttackOvershoot(envAttackOvershootIn); }
 	void setDecaySeconds(double envDecayTimeIn) { decaySeconds = envDecayTimeIn; aDSR.setDecaySeconds(decaySeconds); }
 	void setSustainPercent(double envSustainLevelIn) { sustainPercent = envSustainLevelIn; aDSR.setSustainPercent(sustainPercent); }
 	void setReleaseSeconds(double envReleaseTimeIn) { releaseSeconds = envReleaseTimeIn; aDSR.setReleaseSeconds(releaseSeconds); }
