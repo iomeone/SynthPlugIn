@@ -61,6 +61,31 @@ public:
     void setInterval(float inNewInterval);
 	void setSkewFactorFromMidPoint(double skewMidPoint);
     
+    /** for doing component specific things like adding items to a comboBox.
+    
+     example:
+     ComboBox* cb = mLabeledComboBox->getComboBox();
+     cb->addItem("my item", 1);
+     cb->addItem("my item", 2);
+     cb->addItem("my item", 3);
+     
+    */
+    
+    Slider* getSlider() { return mSlider.get(); }
+    
+    Button* getButton() { return mButton.get(); }
+    
+    ComboBox* getComboBox() { return mComboBox.get(); }
+    
+    
+    /** this function returns the associated range with our parameter component.
+     
+        for a slider, range might be 0.01 - 1.0f
+        for a comboBox, range might be (0 - 4)
+        for a button, range is (0 - 1)
+    */
+    Range<float> getRange() { return mRange.getRange(); }
+    
 private:
     
     /** internal */
@@ -84,7 +109,7 @@ private:
     
     String mName;
     
-    NormalisableRange<float> mSliderRange;
+    NormalisableRange<float> mRange;
     
     int mNumberOfDecimalsToDisplay;
     

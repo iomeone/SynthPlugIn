@@ -19,14 +19,19 @@ AudioPlugInAudioProcessorEditor::AudioPlugInAudioProcessorEditor (AudioPlugInAud
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+    
+    double timer = Time::getMillisecondCounterHiRes();
 
-	createNumPartialsGroup();
-	createGainGroup();
-	createEnvelopeGroup();
-	createDelayGroup();
+    createNumPartialsGroup();
+    createGainGroup();
+    createEnvelopeGroup();
+    createDelayGroup();
 
 	setResizable(true, true);
 	setSize(screenWidth, screenHeight);
+    
+    double currentTime = Time::getMillisecondCounterHiRes() - timer;
+    DBG("construction time: " << currentTime << "ms.");
 }
 
 AudioPlugInAudioProcessorEditor::~AudioPlugInAudioProcessorEditor()

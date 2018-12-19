@@ -54,7 +54,6 @@ public:
 	double pulse(double frequency, double duty);
 	double noise();
 	double sinebuf(double frequency);
-	double sine512noint(double frequency);
 	double sinebuf4(double frequency);
 	double sawn(double frequency);
 	double rect(double frequency, double duty = 0.5);

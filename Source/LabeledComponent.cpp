@@ -110,6 +110,7 @@ void LabeledComponent::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 void LabeledComponent::setNumDecimalPlacesToDisplay(int decimals)
 {
     mNumberOfDecimalsToDisplay = decimals;
+    updateLabelText();
 }
 
 void LabeledComponent::setInterval(float inNewInterval)
@@ -117,8 +118,8 @@ void LabeledComponent::setInterval(float inNewInterval)
     Slider* slider = mSlider.get();
     
     if(slider){
-        slider->setRange (mSliderRange.getRange().getStart(),
-                          mSliderRange.getRange().getEnd(),
+        slider->setRange (mRange.getRange().getStart(),
+                          mRange.getRange().getEnd(),
                           inNewInterval);
     } else {
         // what are you doing, this is not a slider!
@@ -146,16 +147,18 @@ void LabeledComponent::constructSlider(AudioProcessorValueTreeState& state,
     
     mName = parameter->name;
     
-    const float defaultValue = parameter->getDefaultValue();
-    mSliderRange = state.getParameterRange(parameterId);
+    const float defaultValue = parameter->getValue();
+    mRange = state.getParameterRange(parameterId);
+    
+    // DBG("defaultValue: " << defaultValue);
     
     Slider* slider = new Slider();
     slider->setName(mName);
     slider->setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, false, 0, 0);
     slider->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag); // OR RotaryHorizontalVerticalDrag
-    slider->setValue(defaultValue, dontSendNotification);
+    slider->setValue(defaultValue, sendNotification);
     slider->setDoubleClickReturnValue(true, defaultValue);
-    slider->setRange(mSliderRange.getRange().getStart(), mSliderRange.getRange().getEnd(), 0.001);
+    slider->setRange(mRange.getRange().getStart(), mRange.getRange().getEnd(), 0.001);
     slider->addListener(this);
     mSlider = std::unique_ptr<Slider>(slider);
     addAndMakeVisible(slider);
@@ -178,10 +181,12 @@ void LabeledComponent::constructButton(AudioProcessorValueTreeState& state,
     state.getParameter(parameterId);
     
     mName = parameter->name;
+    mRange = state.getParameterRange(parameterId);
+    const bool defaultValue = (bool)parameter->getValue();
     
     TextButton* button = new TextButton(); //TextButton(mName); for having button named.
     button->setClickingTogglesState(true);
-    button->setToggleState(false, dontSendNotification);
+    button->setToggleState(defaultValue, dontSendNotification);
     mButton = std::unique_ptr<TextButton>(button);
 	addAndMakeVisible(button);
     
@@ -197,6 +202,8 @@ void LabeledComponent::constructComboBox(AudioProcessorValueTreeState& state,
     state.getParameter(parameterId);
     
     mName = parameter->name;
+    mRange = state.getParameterRange(parameterId);
+    const int defaultValue = parameter->getValue();
 	
 	ComboBox* combo = new ComboBox(); 
 	combo->setEditableText(false);
@@ -207,7 +214,6 @@ void LabeledComponent::constructComboBox(AudioProcessorValueTreeState& state,
 	AudioProcessorValueTreeState::ComboBoxAttachment* attachment =
 		new AudioProcessorValueTreeState::ComboBoxAttachment(state, parameterId, *combo);
 	mComboBoxAttachment = std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment>(attachment);
-
 }
 
 
@@ -280,6 +286,8 @@ void LabeledComponent::updateLabelText()
 {
     String value = String(mSlider->getValue(),
                           mNumberOfDecimalsToDisplay);
+    
+    DBG("value: " << value);
     
     mLabel->setText(value, dontSendNotification);
 }

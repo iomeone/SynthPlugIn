@@ -21,9 +21,31 @@ void AudioPlugInAudioProcessorEditor::createNumPartialsGroup()
 	Array<Component*> numPartialsGroupSliders;
 
 	//# PARTIALS
-	LabeledComponent* numVoicesSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_NumVoices);
-	numVoicesSlider->setInterval(1.0f);
-	numVoicesSlider->setNumDecimalPlacesToDisplay(0);
+	LabeledComponent* numVoicesSlider = new LabeledComponent(kLabeledComponentStyle_ComboBox, processor.parameters, id_NumVoices);
+    
+    ComboBox* voicesComboBox = numVoicesSlider->getComboBox();
+    const int numVoices = numVoicesSlider->getRange().getEnd();
+    
+    voicesComboBox->addItem("1 voices", 1);
+    voicesComboBox->addItem("2 voices", 2);
+    voicesComboBox->addItem("3 voices", 3);
+    voicesComboBox->addItem("4 voices", 4);
+    voicesComboBox->addItem("5 voices", 5);
+    voicesComboBox->addItem("6 voices", 6);
+    voicesComboBox->addItem("7 voices", 7);
+    voicesComboBox->addItem("8 voices", 8);
+    voicesComboBox->addItem("9 voices", 9);
+    voicesComboBox->addItem("10 voices", 10);
+    voicesComboBox->addItem("11 voices", 11);
+    voicesComboBox->addItem("12 voices", 12);
+    
+    
+//    for(int i = 0; i < numVoices; i++){
+//        voicesComboBox->addItem("voice #"+(String)i, (i+1));
+//    }
+    
+//    numVoicesSlider->setInterval(1.0f);
+//    numVoicesSlider->setNumDecimalPlacesToDisplay(0);
 	//numVoicesSlider->setSkewFactorFromMidPoint(40.0f);
 	numPartialsGroupSliders.add(numVoicesSlider);
 
@@ -100,13 +122,6 @@ void AudioPlugInAudioProcessorEditor::createEnvelopeGroup()
 	envAttackSlider->setNumDecimalPlacesToDisplay(3);
 	//envAttackSlider->setSkewFactorFromMidPoint(0.01); 
 	envelopeGroupSliders.add(envAttackSlider);
-
-	//ATTACK OVERSHOOT
-	LabeledComponent* envAttackOvershootSlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvAttackOvershoot);
-	envAttackOvershootSlider->setInterval(0.001);
-	envAttackOvershootSlider->setNumDecimalPlacesToDisplay(3);
-	//envAttackOvershootSlider->setSkewFactorFromMidPoint(0.01); 
-	envelopeGroupSliders.add(envAttackOvershootSlider);
 
 	//DECAY SLIDER
 	LabeledComponent* envDecaySlider = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_EnvDecay);

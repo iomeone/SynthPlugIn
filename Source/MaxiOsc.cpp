@@ -223,15 +223,6 @@ double MaxiOsc::sinebuf(double frequency) { //specify the frequency of the oscil
 	return(output);
 }
 
-
-double MaxiOsc::sine512noint(double frequency) { //specify the frequency of the oscillator in Hz / cps etc.
-											//This is a sinewave oscillator that uses linear interpolation on a 514 point buffer
-	output = sineBuffer[(long)phase];
-	phase += 512. / (sampleRate / (frequency*chandiv));
-	if (phase >= 511) phase -= 512;
-	return(output);
-}
-
 double MaxiOsc::coswave(double frequency) {
 	//This is a cosine oscillator
 	output = cos(phase*(TWOPI));

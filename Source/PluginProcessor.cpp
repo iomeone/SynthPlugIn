@@ -29,17 +29,16 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
         /** declare our parameters */
         std::make_unique<AudioParameterFloat> (id_SynthGain, "Gain", NormalisableRange<float>(0.0f, 2.0f), 1.0f),
 		
-		std::make_unique<AudioParameterInt> (id_NumVoices, "# Voices", 1, 12, 6),
-		std::make_unique<AudioParameterInt> (id_NumPartials, "# Partials", 1, 200, 50),
+		std::make_unique<AudioParameterInt> (id_NumVoices, "# Voices", 1, 12, 3),
+		std::make_unique<AudioParameterInt> (id_NumPartials, "# Partials", 1, 200, 8),
 		std::make_unique<AudioParameterInt>(id_NumUnison, "# Unison", 1, 3, 1),
-		std::make_unique<AudioParameterFloat>(id_DeTuneUnisonHz, "Detune Hz", NormalisableRange<float>(0.0f, 500.0f), 1.0f),
-		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 160, 24),
+		std::make_unique<AudioParameterFloat>(id_DeTuneUnisonHz, "Detune Hz", NormalisableRange<float>(0.0f, 500.0f), 200.0f),
+		std::make_unique<AudioParameterInt> (id_SamplesPerIncrement, "Samples/Inc", 1, 900, 1),
 
 		std::make_unique<AudioParameterFloat> (id_EnvPreAttack, "Pre-Attack", NormalisableRange<float>(0.001f, 2.0f), 0.01f),
 		std::make_unique<AudioParameterFloat> (id_EnvPreAttackDecay, "Pre-Decay", NormalisableRange<float>(0.001f, 2.0f), 0.1f),
-		std::make_unique<AudioParameterFloat>(id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.050f),
-		std::make_unique<AudioParameterFloat>(id_EnvAttackOvershoot, "Overshoot", NormalisableRange<float>(1.0f, 2.0f), 1.0f),
-		std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 0.3f),
+        std::make_unique<AudioParameterFloat> (id_EnvAttack, "Attack", NormalisableRange<float>(0.001f, 2.0f), 0.015f),
+        std::make_unique<AudioParameterFloat> (id_EnvDecay, "Decay", NormalisableRange<float>(0.001f, 10.0f), 2.0f),
         std::make_unique<AudioParameterFloat> (id_EnvSustain, "Sustain", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_EnvRelease, "Release", NormalisableRange<float>(0.001f, 4.0f), 0.02f),
         
@@ -189,18 +188,23 @@ void AudioPlugInAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBu
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
     
-	//for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    //{
-		//buffer.clear();
-	//	auto* channelData = buffer.getWritePointer (channel);
-	
-        // ..do something to the data...
-    //}
-	
 	buffer.clear();
 	mySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-	//add FX section here eg. myFX
 
+    //for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    //{
+    //    auto* channelData = buffer.getWritePointer (channel);
+    
+        // ..do something to the data...
+    
+        // mLofi[channel].renderNextBlock(buffer, buffer, buffer.getNumSamples());
+    
+        // mDistortion[channel].renderNextBlock(buffer, buffer.getNumSamples());
+    
+        // mFilter[channel].renderNextBlock(buffer, buffer.getNumSamples());
+    //}
+    
+	
 }
 
 //==============================================================================

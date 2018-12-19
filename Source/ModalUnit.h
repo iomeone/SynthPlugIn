@@ -15,6 +15,8 @@
 #include "EnvelopeGenerator.h"
 #include "SimpleOsc.h"
 
+#include "GlobalFunctions.h"
+
 //==============================================================================
 /*
 */
@@ -26,6 +28,11 @@ public:
         mPartialNumber(inPartialNumber),
 		mUnisonNumber(inUnisonNumber)
 	{
+        Array<float> sine_table = getSineTable(512);
+        
+        for(int i = 0; i< sine_table.size(); i++){
+            DBG("sine table position #"<<i<<": " << sine_table[i]);
+        }
 	}
     
     void setSampleRate(double inSampleRate)
@@ -48,12 +55,14 @@ public:
 	void setPreAttackSeconds(double envPreAttackTimeIn) { preAttackSeconds = envPreAttackTimeIn; aDSR.setPreAttackSeconds(preAttackSeconds); }
 	void setPreAttackDecaySeconds(double envPreAttackDecayTimeIn) { preAttackDecaySeconds = envPreAttackDecayTimeIn; aDSR.setPreAttackDecaySeconds(preAttackDecaySeconds); }
 	void setAttackSeconds(double envAttackTimeIn) { attackSeconds = envAttackTimeIn; aDSR.setAttackSeconds(attackSeconds); }
-	void setAttackOvershoot(double envAttackOvershootIn) { aDSR.setAttackOvershoot(envAttackOvershootIn); }
 	void setDecaySeconds(double envDecayTimeIn) { decaySeconds = envDecayTimeIn; aDSR.setDecaySeconds(decaySeconds); }
 	void setSustainPercent(double envSustainLevelIn) { sustainPercent = envSustainLevelIn; aDSR.setSustainPercent(sustainPercent); }
 	void setReleaseSeconds(double envReleaseTimeIn) { releaseSeconds = envReleaseTimeIn; aDSR.setReleaseSeconds(releaseSeconds); }
 	void setEnterStage(EnvelopeGenerator::EnvelopeStage NewStageIn) { envelopeStage = NewStageIn; aDSR.enterStage(envelopeStage); }
 
+    void setNoteOnTimeTick(int inTimeTick) {
+        mTimeTick = inTimeTick;
+    }
 	
 	double getSinOutput() 
 	{   
@@ -65,8 +74,7 @@ public:
 
 		else
 		{
-			sinOutput = testOsc.sine512noint(frequencyDelayed); // allows ~ oscillators on laptop core
-			//sinOutput = testOsc.sinebuf(frequencyDelayed); // allows ~88 oscillators on laptop core
+			sinOutput = testOsc.sinebuf(frequencyDelayed); // allows ~88 oscillators on laptop core
 			//sinOutput = testOsc.sinebuf4(frequencyDelayed); // allows ~71 oscillators on laptop core
 			//sinOutput = simpleSin.sinewave(frequencyDelayed); // allows ~60 oscillators on laptop core
 		}
@@ -82,19 +90,11 @@ public:
 	double getADSROutput()
 	{
 		//TECHNIQUE FOR REDUCING THE OUTPUT OF THE ADSR TO ONCE EVERY 10 SAMPLES (but need to change envelope internally to add 10 per sample to compensate)
-		//
-		//adsrValue = aDSR.nextSample();
-		//return adsrValue;
-
-		//DBG("eventSampleRate = " << eventSampleRate << " sampleRate = " << mSampleRate << " samplesPerIncrement = " << samplesPerIncrement);
 		
-		if (adsrCounter >= samplesPerIncrement) {
+		if (mTimeTick == 1) {
 			adsrValue = aDSR.nextSample();
-			adsrCounter = 1;
 		}
-		else {
-			adsrCounter++;
-		}
+		
 		return adsrValue;
 	}
     
@@ -109,7 +109,9 @@ private:
 	MaxiOsc testOsc;
 	SimpleOsc simpleSin;
 	EnvelopeGenerator aDSR;
-	double adsrCounter = 0.0;
+    
+    int mTimeTick = 1;
+
 	double adsrValue = 0.0;
 	double eventSampleRate = 44100;
 	double samplesPerIncrement = 1.0;
