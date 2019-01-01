@@ -195,3 +195,178 @@ void AudioPlugInAudioProcessorEditor::createDelayGroup()
 	addAndMakeVisible(delayGroup);
 	//filterGroup->setLookAndFeel(&labeledGroupLookAndFeel);
 }
+
+
+//DUMMY
+void AudioPlugInAudioProcessorEditor::createdummy1Group()
+{
+	Array<Component*> dummy1GroupSliders;
+
+	//TIME SLIDER
+	LabeledComponent* dummySlider1 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy1);
+	dummySlider1->setInterval(0.001);
+	dummySlider1->setNumDecimalPlacesToDisplay(2);
+	dummy1GroupSliders.add(dummySlider1);
+
+	//FEEDBACK SLIDER
+	LabeledComponent* dummySlider2 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy2);
+	dummySlider2->setInterval(0.01);
+	dummySlider2->setNumDecimalPlacesToDisplay(2);
+	dummy1GroupSliders.add(dummySlider2);
+
+	//DRY/WET SLIDER
+	LabeledComponent* dummySlider3 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy3);
+	dummySlider3->setInterval(0.01);
+	dummySlider3->setNumDecimalPlacesToDisplay(2);
+	dummy1GroupSliders.add(dummySlider3);
+
+	//PRE/POST SLIDER
+	LabeledComponent* dummySlider4 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy4);
+	dummySlider4->setInterval(0.01);
+	dummySlider4->setNumDecimalPlacesToDisplay(2);
+	dummy1GroupSliders.add(dummySlider4);
+
+	//GROUP COMPOSITION
+	LabeledGroup* dummy1Group = new LabeledGroup("dummy1", dummy1GroupSliders);
+	mLabeledGroups.add(dummy1Group);
+	addAndMakeVisible(dummy1Group);
+}
+
+//DUMMY
+void AudioPlugInAudioProcessorEditor::createdummy2Group()
+{
+	Array<Component*> dummy2GroupSliders;
+
+	//TIME SLIDER
+	LabeledComponent* dummySlider1 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy5);
+	dummySlider1->setInterval(0.001);
+	dummySlider1->setNumDecimalPlacesToDisplay(2);
+	dummy2GroupSliders.add(dummySlider1);
+
+	//FEEDBACK SLIDER
+	LabeledComponent* dummySlider2 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy6);
+	dummySlider2->setInterval(0.01);
+	dummySlider2->setNumDecimalPlacesToDisplay(2);
+	dummy2GroupSliders.add(dummySlider2);
+
+	//DRY/WET SLIDER
+	LabeledComponent* dummySlider3 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy7);
+	dummySlider3->setInterval(0.01);
+	dummySlider3->setNumDecimalPlacesToDisplay(2);
+	dummy2GroupSliders.add(dummySlider3);
+
+	//PRE/POST SLIDER
+	LabeledComponent* dummySlider4 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy8);
+	dummySlider4->setInterval(0.01);
+	dummySlider4->setNumDecimalPlacesToDisplay(2);
+	dummy2GroupSliders.add(dummySlider4);
+
+	//GROUP COMPOSITION
+	LabeledGroup* dummy2Group = new LabeledGroup("dummy2", dummy2GroupSliders);
+	mLabeledGroups.add(dummy2Group);
+	addAndMakeVisible(dummy2Group);
+}
+
+//DUMMY
+void AudioPlugInAudioProcessorEditor::createdummy3Group()
+{
+	Array<Component*> dummy3GroupSliders;
+
+	//TIME SLIDER
+	LabeledComponent* dummySlider1 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy9);
+	dummySlider1->setInterval(0.001);
+	dummySlider1->setNumDecimalPlacesToDisplay(2);
+	dummy3GroupSliders.add(dummySlider1);
+
+	//FEEDBACK SLIDER
+	LabeledComponent* dummySlider2 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy10);
+	dummySlider2->setInterval(0.01);
+	dummySlider2->setNumDecimalPlacesToDisplay(2);
+	dummy3GroupSliders.add(dummySlider2);
+
+	//DRY/WET SLIDER
+	LabeledComponent* dummySlider3 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy11);
+	dummySlider3->setInterval(0.01);
+	dummySlider3->setNumDecimalPlacesToDisplay(2);
+	dummy3GroupSliders.add(dummySlider3);
+
+	//PRE/POST SLIDER
+	LabeledComponent* dummySlider4 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy12);
+	dummySlider4->setInterval(0.01);
+	dummySlider4->setNumDecimalPlacesToDisplay(2);
+	dummy3GroupSliders.add(dummySlider4);
+
+	//GROUP COMPOSITION
+	LabeledGroup* dummy3Group = new LabeledGroup("dummy3", dummy3GroupSliders);
+	mLabeledGroups.add(dummy3Group);
+	addAndMakeVisible(dummy3Group);
+}
+//DUMMY
+void AudioPlugInAudioProcessorEditor::createdummy4Group()
+{
+	Array<Component*> dummy4GroupSliders;
+
+	//TIME SLIDER
+	LabeledComponent* dummySlider1 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy13);
+	dummySlider1->setInterval(0.001);
+	dummySlider1->setNumDecimalPlacesToDisplay(2);
+	dummy4GroupSliders.add(dummySlider1);
+
+	//FEEDBACK SLIDER
+	LabeledComponent* dummySlider2 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy14);
+	dummySlider2->setInterval(0.01);
+	dummySlider2->setNumDecimalPlacesToDisplay(2);
+	dummy4GroupSliders.add(dummySlider2);
+
+	//DRY/WET SLIDER
+	LabeledComponent* dummySlider3 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy15);
+	dummySlider3->setInterval(0.01);
+	dummySlider3->setNumDecimalPlacesToDisplay(2);
+	dummy4GroupSliders.add(dummySlider3);
+
+	//PRE/POST SLIDER
+	LabeledComponent* dummySlider4 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy16);
+	dummySlider4->setInterval(0.01);
+	dummySlider4->setNumDecimalPlacesToDisplay(2);
+	dummy4GroupSliders.add(dummySlider4);
+
+	//GROUP COMPOSITION
+	LabeledGroup* dummy4Group = new LabeledGroup("dummy4", dummy4GroupSliders);
+	mLabeledGroups.add(dummy4Group);
+	addAndMakeVisible(dummy4Group);
+}
+
+//DUMMY
+void AudioPlugInAudioProcessorEditor::createdummy5Group()
+{
+	Array<Component*> dummy5GroupSliders;
+
+	//TIME SLIDER
+	LabeledComponent* dummySlider1 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy17);
+	dummySlider1->setInterval(0.001);
+	dummySlider1->setNumDecimalPlacesToDisplay(2);
+	dummy5GroupSliders.add(dummySlider1);
+
+	//FEEDBACK SLIDER
+	LabeledComponent* dummySlider2 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy18);
+	dummySlider2->setInterval(0.01);
+	dummySlider2->setNumDecimalPlacesToDisplay(2);
+	dummy5GroupSliders.add(dummySlider2);
+
+	//DRY/WET SLIDER
+	LabeledComponent* dummySlider3 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy19);
+	dummySlider3->setInterval(0.01);
+	dummySlider3->setNumDecimalPlacesToDisplay(2);
+	dummy5GroupSliders.add(dummySlider3);
+
+	//PRE/POST SLIDER
+	LabeledComponent* dummySlider4 = new LabeledComponent(kLabeledComponentStyle_Slider, processor.parameters, id_Dummy20);
+	dummySlider4->setInterval(0.01);
+	dummySlider4->setNumDecimalPlacesToDisplay(2);
+	dummy5GroupSliders.add(dummySlider4);
+
+	//GROUP COMPOSITION
+	LabeledGroup* dummy5Group = new LabeledGroup("dummy5", dummy5GroupSliders);
+	mLabeledGroups.add(dummy5Group);
+	addAndMakeVisible(dummy5Group);
+}

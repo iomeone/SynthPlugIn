@@ -26,6 +26,11 @@ AudioPlugInAudioProcessorEditor::AudioPlugInAudioProcessorEditor (AudioPlugInAud
     createGainGroup();
     createEnvelopeGroup();
     createDelayGroup();
+	createdummy1Group();
+	createdummy2Group();
+	createdummy3Group();
+	createdummy4Group();
+	createdummy5Group();
 
 	setResizable(true, true);
 	setSize(screenWidth, screenHeight);

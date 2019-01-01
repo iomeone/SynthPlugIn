@@ -47,6 +47,27 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
         std::make_unique<AudioParameterFloat> (id_DelFeedback, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
         std::make_unique<AudioParameterFloat> (id_DelPrePostMix, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_DelDWMix, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
+
+		std::make_unique<AudioParameterFloat>(id_Dummy1, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.25f),
+		std::make_unique<AudioParameterFloat>(id_Dummy2, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
+		std::make_unique<AudioParameterFloat>(id_Dummy3, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+		std::make_unique<AudioParameterFloat>(id_Dummy4, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
+		std::make_unique<AudioParameterFloat>(id_Dummy5, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.25f),
+		std::make_unique<AudioParameterFloat>(id_Dummy6, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
+		std::make_unique<AudioParameterFloat>(id_Dummy7, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+		std::make_unique<AudioParameterFloat>(id_Dummy8, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
+		std::make_unique<AudioParameterFloat>(id_Dummy9, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.25f),
+		std::make_unique<AudioParameterFloat>(id_Dummy10, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
+		std::make_unique<AudioParameterFloat>(id_Dummy11, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+		std::make_unique<AudioParameterFloat>(id_Dummy12, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
+		std::make_unique<AudioParameterFloat>(id_Dummy13, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.25f),
+		std::make_unique<AudioParameterFloat>(id_Dummy14, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
+		std::make_unique<AudioParameterFloat>(id_Dummy15, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+		std::make_unique<AudioParameterFloat>(id_Dummy16, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
+		std::make_unique<AudioParameterFloat>(id_Dummy17, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.25f),
+		std::make_unique<AudioParameterFloat>(id_Dummy18, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
+		std::make_unique<AudioParameterFloat>(id_Dummy19, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+		std::make_unique<AudioParameterFloat>(id_Dummy20, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
     })
 #endif
 {

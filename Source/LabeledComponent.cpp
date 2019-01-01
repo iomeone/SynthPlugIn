@@ -163,6 +163,7 @@ void LabeledComponent::constructSlider(AudioProcessorValueTreeState& state,
     mSlider = std::unique_ptr<Slider>(slider);
     addAndMakeVisible(slider);
     
+
     mLabel = std::unique_ptr<Label>(new Label());
     mLabel->setEditable(true);
     mLabel->addListener(this);

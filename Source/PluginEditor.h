@@ -40,6 +40,12 @@ private:
 	void createNumPartialsGroup();
 	void createDelayGroup();
 
+	void createdummy1Group();
+	void createdummy2Group();
+	void createdummy3Group();
+	void createdummy4Group();
+	void createdummy5Group();
+
 
 	FlexBox mFlexBox;
 	FlexBox groupsBox;
