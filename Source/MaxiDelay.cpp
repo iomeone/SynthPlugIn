@@ -69,7 +69,33 @@ double MaxiDelayline::delay(double input, double seconds, double feedback, doubl
 	return(output);
 	
 }
+void MaxiDelayline::renderNextBlock(AudioBuffer<float>& bufferIn, float delayTimeIn, float delayFeedbackIn, float delayPrePostMixIn, float delayDWMixIn)
+{
+	for (int i = 0; i < bufferIn.getNumChannels(); ++i)
+	{
+		float* chanbuf = bufferIn.getWritePointer(i);
+		for (int j = 0; j < bufferIn.getNumSamples(); ++j)
+		{
+			chanbuf[j] = delay(chanbuf[j], delayTimeIn, delayFeedbackIn, delayPrePostMixIn, delayDWMixIn);
+		}
 
+	}
+}
+
+void MaxiDelayline::renderNextBlockMono(AudioBuffer<float>& bufferIn, float delayTimeIn, float delayFeedbackIn, float delayPrePostMixIn, float delayDWMixIn)
+{
+	float* chanbuf = bufferIn.getWritePointer(0);
+	for (int j = 0; j < bufferIn.getNumSamples(); ++j)
+	{
+		chanbuf[j] = delay(chanbuf[j], delayTimeIn, delayFeedbackIn, delayPrePostMixIn, delayDWMixIn);
+		for (int i = 1; i < bufferIn.getNumChannels(); ++i)
+		{
+			float* chanbufcopy = bufferIn.getWritePointer(i);
+			chanbufcopy[j] = chanbuf[j];
+		}
+	}
+
+}
 double MaxiDelayline::pureDelay(double input, double seconds) {
 
 	size = seconds * sampleRate;

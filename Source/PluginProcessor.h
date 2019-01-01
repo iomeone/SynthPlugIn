@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SynthVoice.h"
 #include "SynthSound.h"
+#include "Synthesiser.h"
 
 //==============================================================================
 /**
@@ -58,7 +59,8 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    
+
+	void initializeParameters();
     void parameterChanged (const String& parameterID, float newValue) override;
 
 	// Our parameters
@@ -73,7 +75,16 @@ private:
     void updateNumVoices();
 
 	Array<SynthVoice*> mVoices;
-	Synthesiser mySynth;
+	SynthesiserInherited mySynth;
+
+	MaxiDelayline monoDelay;
+
+	bool monoDOnOff = false;
+	bool delayOnOff = false;
+	float delayTime = 0.0f;
+	float delayPrePostMix = 1.0f;
+	float delayDWMix = 0.7f;
+	float delayFeedback = 0.4f;
 
 	double lastSampleRate;
 

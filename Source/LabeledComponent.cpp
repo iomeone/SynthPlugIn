@@ -208,6 +208,9 @@ void LabeledComponent::constructComboBox(AudioProcessorValueTreeState& state,
 	ComboBox* combo = new ComboBox(); 
 	combo->setEditableText(false);
 	combo->setJustificationType(Justification::centred);
+	//combo->setSelectedId(defaultValue, dontSendNotification);	//setSelectedIndex(defaultValue, dontSendNotification);
+	combo->setSelectedItemIndex(defaultValue, dontSendNotification);	//setSelectedIndex(defaultValue, dontSendNotification);
+
 	mComboBox = std::unique_ptr<ComboBox>(combo);
 	addAndMakeVisible(combo);
 
@@ -265,18 +268,16 @@ void LabeledComponent::comboBoxResized()
 {
 	juce::Rectangle<int> generalBounds = juce::Rectangle<int>(0, 0, getWidth(), getHeight()).reduced(componentMargin);
 
-	float buttonWidthPercent = 0.7f;
-	float buttonHeight = 14.0f;
-	float buttonWidth = 35.0;
-	float buttonVerticalShift = 2.0f;
+	float comboWidthPercent = 0.9f;
+	float comboHeight = 32.f; //16
+	float comboWidth = 45.f;
+	float comboVerticalShift = 2.0f;
 
 	juce::Rectangle<int> comboBoxBounds = juce::Rectangle<int>(
-		//(generalBounds.getWidth() * 0.5) - (generalBounds.getWidth() * buttonWidthPercent * 0.5) + componentMargin,
-		(generalBounds.getWidth() * 0.5) - (buttonWidth * 0.5) + componentMargin,
-		(generalBounds.getHeight() * 0.5 - (buttonHeight * 0.5)) + componentMargin + buttonVerticalShift,
-		//generalBounds.getWidth() * buttonWidthPercent,
-		buttonWidth,
-		buttonHeight);
+		(generalBounds.getWidth() * 0.5) - (comboWidth * 0.5) + componentMargin,
+		(generalBounds.getHeight() * 0.5 - (comboHeight * 0.5)) + componentMargin + comboVerticalShift,
+		comboWidth,
+		comboHeight);
 
 	ComboBox* combo = mComboBox.get();
 	combo->setBounds(comboBoxBounds);

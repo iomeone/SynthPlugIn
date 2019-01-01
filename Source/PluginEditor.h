@@ -40,10 +40,17 @@ private:
 	void createNumPartialsGroup();
 	void createDelayGroup();
 
+
 	FlexBox mFlexBox;
+	FlexBox groupsBox;
+	FlexBox parentBox;
+
+
+	Viewport mainViewPort;
+	Component generalBoundsComponent;
+
 
 	OwnedArray<LabeledGroup> mLabeledGroups;
-	SliderLookAndFeel sliderLookAndFeel;
 	LabeledGroupLookAndFeel labeledGroupLookAndFeel;
 
 

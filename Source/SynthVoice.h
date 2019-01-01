@@ -90,30 +90,6 @@ public:
     }
 
 	//=======================================================
-
-	double delayOutput()
-	{
-        
-        auto delayOnOff =
-        *parametersPointer->getRawParameterValue(id_DelOnOff);
-        
-        if ((bool)delayOnOff) {
-            
-//            double MaxiDelayline::delay(double input, double seconds, double feedback, double prePostMixer, double dryWetMixer)
-            
-            
-			return delayLine.delay(modalOutput(),
-                                   *parametersPointer->getRawParameterValue(id_DelTime),
-                                   *parametersPointer->getRawParameterValue(id_DelFeedback),
-                                   *parametersPointer->getRawParameterValue(id_DelPrePostMix),
-                                   *parametersPointer->getRawParameterValue(id_DelDWMix));
-		}
-		else {
-			return modalOutput();
-		}
-		}
-
-
 	double filterOutput() //resonant bandpass test
 	{
 		return simpleFilter.processAudioSample(noiseImpulse(), 1);
@@ -232,7 +208,7 @@ public:
             }
 
             //OUTPUT HERE
-            finalOutput = delayOutput()*oscillatorGainSmoothed;
+            finalOutput = modalOutput()*oscillatorGainSmoothed;
 
             for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
             {

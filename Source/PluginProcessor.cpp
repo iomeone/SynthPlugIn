@@ -42,22 +42,36 @@ AudioPlugInAudioProcessor::AudioPlugInAudioProcessor()
         std::make_unique<AudioParameterFloat> (id_EnvSustain, "Sustain", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
         std::make_unique<AudioParameterFloat> (id_EnvRelease, "Release", NormalisableRange<float>(0.001f, 4.0f), 0.02f),
         
-		std::make_unique<AudioParameterBool> (id_DelOnOff, "Bypass", true),
+		std::make_unique<AudioParameterBool> (id_DelOnOff, "On/Off", true),
 		std::make_unique<AudioParameterFloat> (id_DelTime, "Time", NormalisableRange<float>(0.0f, 2.0f), 0.25f),
         std::make_unique<AudioParameterFloat> (id_DelFeedback, "Feedback", NormalisableRange<float>(0.0f, 1.0f), 0.4f),
         std::make_unique<AudioParameterFloat> (id_DelPrePostMix, "Pre/Post", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
-        std::make_unique<AudioParameterFloat> (id_DelDWMix, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.0f),
+        std::make_unique<AudioParameterFloat> (id_DelDWMix, "Dry/Wet", NormalisableRange<float>(0.0f, 1.0f), 0.3f),
     })
 #endif
 {
     updateNumVoices();
 
     parameters.addParameterListener(id_NumVoices, this);
+
+	parameters.addParameterListener(id_DelOnOff, this);
+	parameters.addParameterListener(id_DelTime, this);
+	parameters.addParameterListener(id_DelFeedback, this);
+	parameters.addParameterListener(id_DelPrePostMix, this);
+	parameters.addParameterListener(id_DelDWMix, this);
+
+	initializeParameters();
 }
 
 AudioPlugInAudioProcessor::~AudioPlugInAudioProcessor()
 {
     parameters.removeParameterListener(id_NumVoices, this);
+
+	parameters.removeParameterListener(id_DelOnOff, this);
+	parameters.removeParameterListener(id_DelTime, this);
+	parameters.removeParameterListener(id_DelFeedback, this);
+	parameters.removeParameterListener(id_DelPrePostMix, this);
+	parameters.removeParameterListener(id_DelDWMix, this);
 }
 
 //==============================================================================
@@ -131,6 +145,8 @@ void AudioPlugInAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 	ignoreUnused(samplesPerBlock);
 	lastSampleRate = sampleRate;
 	mySynth.setCurrentPlaybackSampleRate(lastSampleRate);
+
+	monoDelay.setSampleRate(lastSampleRate, 2);
 	
 }
 
@@ -190,6 +206,10 @@ void AudioPlugInAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBu
     
 	buffer.clear();
 	mySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+	
+	if (delayOnOff) {
+		monoDelay.renderNextBlock(buffer, delayTime, delayFeedback, delayPrePostMix, delayDWMix);
+	}
 
     //for (int channel = 0; channel < totalNumInputChannels; ++channel)
     //{
@@ -224,20 +244,54 @@ void AudioPlugInAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+	auto state = parameters.copyState();
+	std::unique_ptr<XmlElement> xml(state.createXml());
+	copyXmlToBinary(*xml, destData);
 }
 
 void AudioPlugInAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+	std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+	if (xmlState.get() != nullptr)
+		if (xmlState->hasTagName(parameters.state.getType()))
+			parameters.replaceState(ValueTree::fromXml(*xmlState));
 }
 
+void AudioPlugInAudioProcessor::initializeParameters()
+{
+	
+	delayOnOff = *parameters.getRawParameterValue(id_DelOnOff);
+	delayDWMix = *parameters.getRawParameterValue(id_DelDWMix);
+	delayPrePostMix = *parameters.getRawParameterValue(id_DelPrePostMix);
+	delayTime = *parameters.getRawParameterValue(id_DelTime);
+	delayFeedback = *parameters.getRawParameterValue(id_DelFeedback);
+
+}
 void AudioPlugInAudioProcessor::parameterChanged (const String& parameterID, float newValue)
 {
     if(parameterID == id_NumVoices){
-        
         updateNumVoices();
     }
+
+	else if (parameterID == id_DelOnOff) {
+		delayOnOff = newValue;
+	}
+	else if (parameterID == id_DelTime) {
+		delayTime = newValue;
+	}
+	else if (parameterID == id_DelFeedback) {
+		delayFeedback = newValue;
+	}
+	else if (parameterID == id_DelPrePostMix) {
+		delayPrePostMix = newValue;
+	}
+	else if (parameterID == id_DelDWMix) {
+		delayDWMix = newValue;
+	}
 }
 
 void AudioPlugInAudioProcessor::updateNumVoices()

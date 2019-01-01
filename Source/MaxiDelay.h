@@ -34,6 +34,8 @@ private:
 public:
 	MaxiDelayline();
 	double delay(double input, double seconds, double feedback, double prePostMixer, double dryWetMixer);
+	void renderNextBlock(AudioBuffer<float>& bufferIn, float delayTimeIn, float delayFeedbackIn, float delayPrePostMixIn, float delayDWMixIn);
+	void renderNextBlockMono(AudioBuffer<float>& bufferIn, float delayTimeIn, float delayFeedbackIn, float delayPrePostMixIn, float delayDWMixIn);
 	double pureDelay(double input, double seconds);
 	double delayPositional(double input, double seconds, double feedback, int position);
     void setSampleRate(double newSampleRate, double newMaxTime); // { sampleRate = newSampleRate; }

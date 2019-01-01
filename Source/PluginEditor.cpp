@@ -59,9 +59,9 @@ void AudioPlugInAudioProcessorEditor::resized()
 	groupsBox.alignContent = FlexBox::AlignContent::flexStart;
 
 
-	for (int i = 0; i< mLabeledGroups.size(); i++) {
+	for (int i = 0; i < mLabeledGroups.size(); i++) {
 
-		int rowCount = (mLabeledGroups[i]->getWidth() / (getWidth() - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2) + (mLabeledGroups[i]->getWidth() % (getWidth() - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2) != 0));
+		int rowCount = (mLabeledGroups[i]->getWidth() / (getWidth() - scrollBarWidth - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2) + (mLabeledGroups[i]->getWidth() % (getWidth() - scrollBarWidth - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2) != 0));
 		// rowCount = group specific multiplier to determine rows based on (Group's componentsArrayWidth)/(screenwidth - margins)), rounded up
 		// rounding up via [ q = x / y + (x % y != 0) ]
 
@@ -76,15 +76,25 @@ void AudioPlugInAudioProcessorEditor::resized()
 			.withMinWidth(mLabeledGroups[i]->getWidth())
 			//removing minWidth line allows better visualization of fundamental problem - labeledSliders are expanding horizontally to abnormal size on window contraction
 
-			.withMaxWidth(getWidth() - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2)
+			.withMaxWidth(getWidth() - scrollBarWidth - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2)
 			.withMargin(betweenLabeledGroupMargin) // adds margin between labeledGroups
 			.withFlex(1));
 
+		generalBoundsComponent.addChildComponent(*mLabeledGroups[i]);
 	}
 
-	FlexBox parentBox;
 	parentBox.flexDirection = FlexBox::Direction::column;
 	parentBox.items.add(FlexItem(groupsBox).withFlex(2.5, 2).withMargin(outerScreenMargin)); //adds margin around edge of screen
-	parentBox.performLayout(getLocalBounds().toFloat());
+	parentBox.performLayout(Rectangle<float>(outerScreenMargin + betweenLabeledGroupMargin, outerScreenMargin, (getWidth() - scrollBarWidth - outerScreenMargin * 2 - betweenLabeledGroupMargin * 2), getHeight()));
+	//parentBox.performLayout(getLocalBounds().toFloat());
+
+	addAndMakeVisible(generalBoundsComponent);
+	generalBoundsComponent.setSize(getParentWidth(), (int)mLabeledGroups[mLabeledGroups.size() - 1]->getBottom() + outerScreenMargin + betweenLabeledGroupMargin);
+
+	mainViewPort.setScrollBarsShown(true, false);
+	mainViewPort.setScrollBarThickness(scrollBarWidth);
+	mainViewPort.setSize(screenWidth, screenHeight - 3); //need at least minus 2 here to prevent glitching at bottom of screen, minus 2 = intermittent glitching
+	mainViewPort.setViewedComponent(&generalBoundsComponent);
+	addAndMakeVisible(mainViewPort);
 
 }
